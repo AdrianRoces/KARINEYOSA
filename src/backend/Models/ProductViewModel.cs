@@ -8,22 +8,26 @@ namespace IPT101.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         
-        [Required]
-        public string Category { get; set; } = string.Empty;
+        // Optional: For variant naming format "(Color) - (Product Name)"
+        public string? VariantName { get; set; }
         
         [Required]
-        [Range(0.01, double.MaxValue)]
-        public decimal Price { get; set; }
+        public string Category { get; set; } = string.Empty;
         
         public IFormFile? Image { get; set; }
         
         [Range(0, int.MaxValue)]
-        public int Small { get; set; }
+        public int TotalStock { get; set; } = 0;
         
-        [Range(0, int.MaxValue)]
-        public int Medium { get; set; }
+        [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+        public decimal Price { get; set; }
         
-        [Range(0, int.MaxValue)]
-        public int Large { get; set; }
+        [Required]
+        [Range(0, double.MaxValue, ErrorMessage = "Actual cost must be 0 or greater")]
+        public decimal ActualCost { get; set; }
+        
+        // Group variants by product name
+        public int? ProductSetId { get; set; }
     }
 }

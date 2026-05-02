@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\backend.csproj": {}
+    "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\backend.csproj": {
+    "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\backend.csproj",
+        "projectPath": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\backend.csproj",
         "packagesPath": "C:\\Users\\ADZ\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\obj\\",
+        "outputPath": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ADZ\\AppData\\Roaming\\NuGet\\NuGet.Config",

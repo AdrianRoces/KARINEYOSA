@@ -1,256 +1,368 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\00524108-564e-48f4-94f7-20f72391bb91_pleated skirt.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\00524108-564e-48f4-94f7-20f72391bb91_pleated skirt.jpg",
       "PackagePath": "staticwebassets\\uploads\\00524108-564e-48f4-94f7-20f72391bb91_pleated skirt.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\03c469e1-dd8d-474f-b095-c996278f4e41_3D rose fabric • gartered waist.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\03c469e1-dd8d-474f-b095-c996278f4e41_3D rose fabric • gartered waist.jpg",
       "PackagePath": "staticwebassets\\uploads\\03c469e1-dd8d-474f-b095-c996278f4e41_3D rose fabric • gartered waist.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\0758425b-a0d3-4b74-b7f5-59f1c89a3359_Collared button-down midi dress.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\0758425b-a0d3-4b74-b7f5-59f1c89a3359_Collared button-down midi dress.jpg",
       "PackagePath": "staticwebassets\\uploads\\0758425b-a0d3-4b74-b7f5-59f1c89a3359_Collared button-down midi dress.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\0884ded3-7a51-4054-af35-4eda0c55b04a_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\0884ded3-7a51-4054-af35-4eda0c55b04a_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\0884ded3-7a51-4054-af35-4eda0c55b04a_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\094fca92-51d1-4386-834a-c9f4ce6f5beb_boho skirt • gartered waist.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\094fca92-51d1-4386-834a-c9f4ce6f5beb_boho skirt • gartered waist.jpg",
       "PackagePath": "staticwebassets\\uploads\\094fca92-51d1-4386-834a-c9f4ce6f5beb_boho skirt • gartered waist.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\12_6687c9c9-e0e8-44b7-87fd-af2d955e518f_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\12_6687c9c9-e0e8-44b7-87fd-af2d955e518f_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\12_6687c9c9-e0e8-44b7-87fd-af2d955e518f_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\14222346-3b6a-40aa-9bec-8fbe9d285110_Crop Calendar.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\14222346-3b6a-40aa-9bec-8fbe9d285110_Crop Calendar.png",
       "PackagePath": "staticwebassets\\uploads\\14222346-3b6a-40aa-9bec-8fbe9d285110_Crop Calendar.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\15074dbc-bd8b-4b28-9545-250239341c75_lavagown.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\15074dbc-bd8b-4b28-9545-250239341c75_lavagown.jpg",
       "PackagePath": "staticwebassets\\uploads\\15074dbc-bd8b-4b28-9545-250239341c75_lavagown.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\161586c4-346b-41aa-8537-d069acd28566_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\161586c4-346b-41aa-8537-d069acd28566_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\161586c4-346b-41aa-8537-d069acd28566_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\20836143-b3b6-49f0-aaa9-22e0ac54b0d7_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\19118983-8fd7-43f9-9231-5de72963a3b5_TatteredFlowersBlack.png",
+      "PackagePath": "staticwebassets\\uploads\\19118983-8fd7-43f9-9231-5de72963a3b5_TatteredFlowersBlack.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\20836143-b3b6-49f0-aaa9-22e0ac54b0d7_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\20836143-b3b6-49f0-aaa9-22e0ac54b0d7_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\220244be-ea62-4689-9549-5eecc1c93663_knitted top with attached shawl.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\220244be-ea62-4689-9549-5eecc1c93663_knitted top with attached shawl.jpg",
       "PackagePath": "staticwebassets\\uploads\\220244be-ea62-4689-9549-5eecc1c93663_knitted top with attached shawl.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\256a9e07-03b7-4641-b3d2-2f03ed7ff5fd_wide leg pleated trousers.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\256a9e07-03b7-4641-b3d2-2f03ed7ff5fd_wide leg pleated trousers.jpg",
       "PackagePath": "staticwebassets\\uploads\\256a9e07-03b7-4641-b3d2-2f03ed7ff5fd_wide leg pleated trousers.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\28db4839-d310-4c95-90b1-41b62bbfb5b4_eyelet knitted top.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\28db4839-d310-4c95-90b1-41b62bbfb5b4_eyelet knitted top.jpg",
       "PackagePath": "staticwebassets\\uploads\\28db4839-d310-4c95-90b1-41b62bbfb5b4_eyelet knitted top.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\2e3767c0-32b5-4e45-8170-d86c6831a1e0_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\2e3767c0-32b5-4e45-8170-d86c6831a1e0_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\2e3767c0-32b5-4e45-8170-d86c6831a1e0_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\2eb4022a-7c05-4e3c-869a-5249adc49727_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\2eb4022a-7c05-4e3c-869a-5249adc49727_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\2eb4022a-7c05-4e3c-869a-5249adc49727_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\30cd3eb1-d475-41e6-ad5f-bbe992b8bd5f_batwing sleeves.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\30cd3eb1-d475-41e6-ad5f-bbe992b8bd5f_batwing sleeves.jpg",
       "PackagePath": "staticwebassets\\uploads\\30cd3eb1-d475-41e6-ad5f-bbe992b8bd5f_batwing sleeves.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\3eb3f560-e717-4308-9926-ccc05bd30f56_niklis.webp",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\32cc1ad4-727a-4678-924f-717003d254bd_KnittedTopBrown.jpg",
+      "PackagePath": "staticwebassets\\uploads\\32cc1ad4-727a-4678-924f-717003d254bd_KnittedTopBrown.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\360c03f8-5cb2-45d1-b2d5-9b3715146acc_KnittedSkirtCoordCream.png",
+      "PackagePath": "staticwebassets\\uploads\\360c03f8-5cb2-45d1-b2d5-9b3715146acc_KnittedSkirtCoordCream.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\3eb3f560-e717-4308-9926-ccc05bd30f56_niklis.webp",
       "PackagePath": "staticwebassets\\uploads\\3eb3f560-e717-4308-9926-ccc05bd30f56_niklis.webp"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\3efced43-9378-4349-9985-5df9fe568138_malupiton.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\3efced43-9378-4349-9985-5df9fe568138_malupiton.jpg",
       "PackagePath": "staticwebassets\\uploads\\3efced43-9378-4349-9985-5df9fe568138_malupiton.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\58df31fa-af81-4f61-a0a0-7da72e52d28f_Diosdado.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\4a1637aa-fd3c-4501-891f-bfcc0995562c_KnittedSkirtCoordBlue.png",
+      "PackagePath": "staticwebassets\\uploads\\4a1637aa-fd3c-4501-891f-bfcc0995562c_KnittedSkirtCoordBlue.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\51e49381-6349-4453-ad85-501fcd35a154_KnittedTopBlack.jpg",
+      "PackagePath": "staticwebassets\\uploads\\51e49381-6349-4453-ad85-501fcd35a154_KnittedTopBlack.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\58df31fa-af81-4f61-a0a0-7da72e52d28f_Diosdado.jpg",
       "PackagePath": "staticwebassets\\uploads\\58df31fa-af81-4f61-a0a0-7da72e52d28f_Diosdado.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\59e54809-86dd-475e-b258-a448ee51654e_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\59e54809-86dd-475e-b258-a448ee51654e_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\59e54809-86dd-475e-b258-a448ee51654e_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\5a55f72d-e426-4aa9-9631-d7bb0aba4093_20250309_120627_0000.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\5a55f72d-e426-4aa9-9631-d7bb0aba4093_20250309_120627_0000.png",
       "PackagePath": "staticwebassets\\uploads\\5a55f72d-e426-4aa9-9631-d7bb0aba4093_20250309_120627_0000.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\5a75de19-e644-4892-b3da-93b73e44612b_image-removebg-preview (4).png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\5a75de19-e644-4892-b3da-93b73e44612b_image-removebg-preview (4).png",
       "PackagePath": "staticwebassets\\uploads\\5a75de19-e644-4892-b3da-93b73e44612b_image-removebg-preview (4).png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\6051c7bc-c8e6-4f27-ae7c-008fe8b8513a_benegas.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\5d2f4baf-7d8a-4785-86f1-4ab5a45d893e_KnittedTopBlue.jpg",
+      "PackagePath": "staticwebassets\\uploads\\5d2f4baf-7d8a-4785-86f1-4ab5a45d893e_KnittedTopBlue.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\5f094a56-7223-4072-9934-560a97c0f5cf_TatteredFlowersBlue.png",
+      "PackagePath": "staticwebassets\\uploads\\5f094a56-7223-4072-9934-560a97c0f5cf_TatteredFlowersBlue.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\5ff6da24-fdf2-4621-8f8d-ce63332f6176_KnittedSkirtCoordBlue.png",
+      "PackagePath": "staticwebassets\\uploads\\5ff6da24-fdf2-4621-8f8d-ce63332f6176_KnittedSkirtCoordBlue.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\6051c7bc-c8e6-4f27-ae7c-008fe8b8513a_benegas.jpg",
       "PackagePath": "staticwebassets\\uploads\\6051c7bc-c8e6-4f27-ae7c-008fe8b8513a_benegas.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\6874bd3d-d4c6-4bb4-9a2d-32a6a5720af9_benegas.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\61766822-be12-4788-86d5-01120ebcda96_FilipinianaPink.png",
+      "PackagePath": "staticwebassets\\uploads\\61766822-be12-4788-86d5-01120ebcda96_FilipinianaPink.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\66f5cf6e-4775-447d-bba7-94cb63430c75_LacedSkirtBlack.jpg",
+      "PackagePath": "staticwebassets\\uploads\\66f5cf6e-4775-447d-bba7-94cb63430c75_LacedSkirtBlack.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\67327674-867a-436d-b204-ba0cef5a1560_TatteredFlowersBlue.png",
+      "PackagePath": "staticwebassets\\uploads\\67327674-867a-436d-b204-ba0cef5a1560_TatteredFlowersBlue.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\6874bd3d-d4c6-4bb4-9a2d-32a6a5720af9_benegas.jpg",
       "PackagePath": "staticwebassets\\uploads\\6874bd3d-d4c6-4bb4-9a2d-32a6a5720af9_benegas.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\68c7421a-d0c5-4fb7-9005-8f5fe6022100_loose cotton dress.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\68c7421a-d0c5-4fb7-9005-8f5fe6022100_loose cotton dress.jpg",
       "PackagePath": "staticwebassets\\uploads\\68c7421a-d0c5-4fb7-9005-8f5fe6022100_loose cotton dress.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\6bf959eb-ae16-4c71-b1c4-fc69ecacc5bc_pexels-harsh-raj-gond-218020-1670848.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\6bf959eb-ae16-4c71-b1c4-fc69ecacc5bc_pexels-harsh-raj-gond-218020-1670848.jpg",
       "PackagePath": "staticwebassets\\uploads\\6bf959eb-ae16-4c71-b1c4-fc69ecacc5bc_pexels-harsh-raj-gond-218020-1670848.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\6c38741e-b4c7-48b6-9219-db3af86c7c90_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\6c38741e-b4c7-48b6-9219-db3af86c7c90_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\6c38741e-b4c7-48b6-9219-db3af86c7c90_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\6e585b63-cba0-4988-b9bb-7e950846a095_padded dress.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\6e3be615-c604-45d4-a2bc-495fd269df7d_TatteredFlowersBlack.png",
+      "PackagePath": "staticwebassets\\uploads\\6e3be615-c604-45d4-a2bc-495fd269df7d_TatteredFlowersBlack.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\6e585b63-cba0-4988-b9bb-7e950846a095_padded dress.jpg",
       "PackagePath": "staticwebassets\\uploads\\6e585b63-cba0-4988-b9bb-7e950846a095_padded dress.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\74364907-b87e-47b5-bcca-a71d40024efb_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\74364907-b87e-47b5-bcca-a71d40024efb_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\74364907-b87e-47b5-bcca-a71d40024efb_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\74f41406-e5e0-4066-9597-6d10d8e3bc80_20250309_120627_0000.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\74f41406-e5e0-4066-9597-6d10d8e3bc80_20250309_120627_0000.png",
       "PackagePath": "staticwebassets\\uploads\\74f41406-e5e0-4066-9597-6d10d8e3bc80_20250309_120627_0000.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\7a5e6cab-2a6a-4ce3-a0d0-01db93939662_Crop Calendar.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\7a5e6cab-2a6a-4ce3-a0d0-01db93939662_Crop Calendar.png",
       "PackagePath": "staticwebassets\\uploads\\7a5e6cab-2a6a-4ce3-a0d0-01db93939662_Crop Calendar.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\7cebd0c1-74de-4c78-be8b-a1a2bd76755a_Two-Piece Illusion Midi Dress.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\7add045d-35c0-45ea-855e-a37283ab2786_LacedSkirtBlue.jpg",
+      "PackagePath": "staticwebassets\\uploads\\7add045d-35c0-45ea-855e-a37283ab2786_LacedSkirtBlue.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\7cebd0c1-74de-4c78-be8b-a1a2bd76755a_Two-Piece Illusion Midi Dress.jpg",
       "PackagePath": "staticwebassets\\uploads\\7cebd0c1-74de-4c78-be8b-a1a2bd76755a_Two-Piece Illusion Midi Dress.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\8d58c975-5527-4c5c-9629-c9f8b340cf0e_gugil.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\7d7b5d29-f11c-4708-bf63-285895e90447_KnittedSkirtCoordCream.png",
+      "PackagePath": "staticwebassets\\uploads\\7d7b5d29-f11c-4708-bf63-285895e90447_KnittedSkirtCoordCream.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\7e4522a9-66c7-4dbd-9f4c-6d14234ad7ff_TatteredFlowersGreen.png",
+      "PackagePath": "staticwebassets\\uploads\\7e4522a9-66c7-4dbd-9f4c-6d14234ad7ff_TatteredFlowersGreen.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\8d58c975-5527-4c5c-9629-c9f8b340cf0e_gugil.png",
       "PackagePath": "staticwebassets\\uploads\\8d58c975-5527-4c5c-9629-c9f8b340cf0e_gugil.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\9425bf48-0584-40c1-ab58-a4dbca3ee615_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\9425bf48-0584-40c1-ab58-a4dbca3ee615_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\9425bf48-0584-40c1-ab58-a4dbca3ee615_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\99c1caee-8097-47cf-8c37-b53a8f709157_bottoms.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\9795a307-3a25-4dc6-a9b0-68eec22b3646_FilipinianaGreen.png",
+      "PackagePath": "staticwebassets\\uploads\\9795a307-3a25-4dc6-a9b0-68eec22b3646_FilipinianaGreen.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\99c1caee-8097-47cf-8c37-b53a8f709157_bottoms.jpg",
       "PackagePath": "staticwebassets\\uploads\\99c1caee-8097-47cf-8c37-b53a8f709157_bottoms.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\a8584cef-b08a-413b-a144-cdfcd0dd6b48_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\9f28bd16-8121-430c-96b9-91053e0ed194_theme.png",
+      "PackagePath": "staticwebassets\\uploads\\9f28bd16-8121-430c-96b9-91053e0ed194_theme.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\a3ca5bd9-7764-4c17-a2d7-37cd07d38e33_LacedSkirtBlack.jpg",
+      "PackagePath": "staticwebassets\\uploads\\a3ca5bd9-7764-4c17-a2d7-37cd07d38e33_LacedSkirtBlack.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\a8584cef-b08a-413b-a144-cdfcd0dd6b48_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\a8584cef-b08a-413b-a144-cdfcd0dd6b48_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\ab09432e-c97e-43d3-af2b-9531496e3bde_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\ab09432e-c97e-43d3-af2b-9531496e3bde_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\ab09432e-c97e-43d3-af2b-9531496e3bde_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\ab0d2130-6e9b-4a15-84dc-8d8241363918_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\ab0d2130-6e9b-4a15-84dc-8d8241363918_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\ab0d2130-6e9b-4a15-84dc-8d8241363918_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\b3448855-5a14-468b-8b56-871e0a0d2d85_satin mermaid skirt.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\b3448855-5a14-468b-8b56-871e0a0d2d85_satin mermaid skirt.jpg",
       "PackagePath": "staticwebassets\\uploads\\b3448855-5a14-468b-8b56-871e0a0d2d85_satin mermaid skirt.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\b5c3d723-019a-4086-94b8-9717f40d3f41_addproduct.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\b5c3d723-019a-4086-94b8-9717f40d3f41_addproduct.png",
       "PackagePath": "staticwebassets\\uploads\\b5c3d723-019a-4086-94b8-9717f40d3f41_addproduct.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\ba1b3a61-0e67-4053-a967-27690c8f2ea7_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\ba1b3a61-0e67-4053-a967-27690c8f2ea7_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\ba1b3a61-0e67-4053-a967-27690c8f2ea7_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\bd3a4cef-31f7-4458-b0b1-d13646277e25_knitted top.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\bd3a4cef-31f7-4458-b0b1-d13646277e25_knitted top.jpg",
       "PackagePath": "staticwebassets\\uploads\\bd3a4cef-31f7-4458-b0b1-d13646277e25_knitted top.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\be3e61fd-d33f-4559-86fe-b9f6379a3af4_Snapinst.app_485645352_18008255768726067_7072190477111491614_n_1080.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\be3e61fd-d33f-4559-86fe-b9f6379a3af4_Snapinst.app_485645352_18008255768726067_7072190477111491614_n_1080.jpg",
       "PackagePath": "staticwebassets\\uploads\\be3e61fd-d33f-4559-86fe-b9f6379a3af4_Snapinst.app_485645352_18008255768726067_7072190477111491614_n_1080.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\c1282ec4-4dac-41de-b332-ded35fe43e8f_botoo.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\c0680dda-e1ef-4c89-a480-feb0c95ea483_KnittedTopBlack.jpg",
+      "PackagePath": "staticwebassets\\uploads\\c0680dda-e1ef-4c89-a480-feb0c95ea483_KnittedTopBlack.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\c1282ec4-4dac-41de-b332-ded35fe43e8f_botoo.jpg",
       "PackagePath": "staticwebassets\\uploads\\c1282ec4-4dac-41de-b332-ded35fe43e8f_botoo.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\c57cb970-ec8f-4197-90a7-4451379fec57_Diosdado Macapagal.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\c3e06dd9-94ff-4904-aea1-3b921178cc4e_TatteredFlowersGreen.png",
+      "PackagePath": "staticwebassets\\uploads\\c3e06dd9-94ff-4904-aea1-3b921178cc4e_TatteredFlowersGreen.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\c57cb970-ec8f-4197-90a7-4451379fec57_Diosdado Macapagal.jpg",
       "PackagePath": "staticwebassets\\uploads\\c57cb970-ec8f-4197-90a7-4451379fec57_Diosdado Macapagal.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\cf40ce2e-dae8-4310-92c7-2e8c89af4b4b_hats.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\c5ea3242-22cb-430b-845b-8758fce991d0_KnittedSkirtCoordPinkishBrown.png",
+      "PackagePath": "staticwebassets\\uploads\\c5ea3242-22cb-430b-845b-8758fce991d0_KnittedSkirtCoordPinkishBrown.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\c9bf3f97-11e0-4964-bba8-5b01673783a6_LacedSkirtWhite.jpg",
+      "PackagePath": "staticwebassets\\uploads\\c9bf3f97-11e0-4964-bba8-5b01673783a6_LacedSkirtWhite.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\cf40ce2e-dae8-4310-92c7-2e8c89af4b4b_hats.jpg",
       "PackagePath": "staticwebassets\\uploads\\cf40ce2e-dae8-4310-92c7-2e8c89af4b4b_hats.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\d27329c5-fa19-4afd-838f-77e7f723435f_QCU_Logo_2019.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\d27329c5-fa19-4afd-838f-77e7f723435f_QCU_Logo_2019.png",
       "PackagePath": "staticwebassets\\uploads\\d27329c5-fa19-4afd-838f-77e7f723435f_QCU_Logo_2019.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\d5778e40-e271-416f-ae2a-9f9bca7819fc_1.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\d5778e40-e271-416f-ae2a-9f9bca7819fc_1.png",
       "PackagePath": "staticwebassets\\uploads\\d5778e40-e271-416f-ae2a-9f9bca7819fc_1.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\d5c74aeb-684c-4fa7-a5dc-fdac7953916c_Screenshot_20241106-000200_1.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\d5c74aeb-684c-4fa7-a5dc-fdac7953916c_Screenshot_20241106-000200_1.png",
       "PackagePath": "staticwebassets\\uploads\\d5c74aeb-684c-4fa7-a5dc-fdac7953916c_Screenshot_20241106-000200_1.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\d7e5185d-d9e7-4a29-b953-1f3aa5ee3afa_skirt.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\d7e5185d-d9e7-4a29-b953-1f3aa5ee3afa_skirt.jpg",
       "PackagePath": "staticwebassets\\uploads\\d7e5185d-d9e7-4a29-b953-1f3aa5ee3afa_skirt.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\ddaf6720-6223-4c5d-8708-577e58823382_Diosdado.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\d95c4ab3-26f0-4645-986f-cd973940c4d4_FilipinianaPink.png",
+      "PackagePath": "staticwebassets\\uploads\\d95c4ab3-26f0-4645-986f-cd973940c4d4_FilipinianaPink.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\ddaf6720-6223-4c5d-8708-577e58823382_Diosdado.jpg",
       "PackagePath": "staticwebassets\\uploads\\ddaf6720-6223-4c5d-8708-577e58823382_Diosdado.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\de8a8542-545d-4d39-9767-a08f86df7894_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\de8a8542-545d-4d39-9767-a08f86df7894_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\de8a8542-545d-4d39-9767-a08f86df7894_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\df355002-86e9-460d-a197-5845a6b2e333_malupiton.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\df355002-86e9-460d-a197-5845a6b2e333_malupiton.jpg",
       "PackagePath": "staticwebassets\\uploads\\df355002-86e9-460d-a197-5845a6b2e333_malupiton.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\dfe70d4b-c49c-4c8c-9fc6-f749d374f176_knitted top• embroidered flowers.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\dfe70d4b-c49c-4c8c-9fc6-f749d374f176_knitted top• embroidered flowers.jpg",
       "PackagePath": "staticwebassets\\uploads\\dfe70d4b-c49c-4c8c-9fc6-f749d374f176_knitted top• embroidered flowers.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\e6942dc0-ffd9-440e-8bda-003deb3ee900_brislit.webp",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\e6942dc0-ffd9-440e-8bda-003deb3ee900_brislit.webp",
       "PackagePath": "staticwebassets\\uploads\\e6942dc0-ffd9-440e-8bda-003deb3ee900_brislit.webp"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\e6f2536a-47b1-48a3-a960-13a451a39932_cargo pants.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\e6f2536a-47b1-48a3-a960-13a451a39932_cargo pants.jpg",
       "PackagePath": "staticwebassets\\uploads\\e6f2536a-47b1-48a3-a960-13a451a39932_cargo pants.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\e831e0bc-bd93-45db-afa7-befe6f1fcd0a_Screenshot_20241106-000200_1.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\e831e0bc-bd93-45db-afa7-befe6f1fcd0a_Screenshot_20241106-000200_1.png",
       "PackagePath": "staticwebassets\\uploads\\e831e0bc-bd93-45db-afa7-befe6f1fcd0a_Screenshot_20241106-000200_1.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\e8cd11f1-9d43-4f3d-a130-0c0a81a813ac_Green Modern Simple Farming Presentation (1).png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\e8cd11f1-9d43-4f3d-a130-0c0a81a813ac_Green Modern Simple Farming Presentation (1).png",
       "PackagePath": "staticwebassets\\uploads\\e8cd11f1-9d43-4f3d-a130-0c0a81a813ac_Green Modern Simple Farming Presentation (1).png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\eaf676ea-8b05-4eef-8ca9-3626e8eab7c4_20250309_120627_0000.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\e96b6f04-6289-4a99-b64c-81babf6ecdea_FilipinianaBlue.png",
+      "PackagePath": "staticwebassets\\uploads\\e96b6f04-6289-4a99-b64c-81babf6ecdea_FilipinianaBlue.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\eaf676ea-8b05-4eef-8ca9-3626e8eab7c4_20250309_120627_0000.png",
       "PackagePath": "staticwebassets\\uploads\\eaf676ea-8b05-4eef-8ca9-3626e8eab7c4_20250309_120627_0000.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\eca20ecc-f170-4db6-9f96-bd4b28e48a8f_SpoilerImgTroll.png",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\eca20ecc-f170-4db6-9f96-bd4b28e48a8f_SpoilerImgTroll.png",
       "PackagePath": "staticwebassets\\uploads\\eca20ecc-f170-4db6-9f96-bd4b28e48a8f_SpoilerImgTroll.png"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\ecaa71c6-d421-4038-a3a0-0f5f71b0b9c8_malupiton.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\ecaa71c6-d421-4038-a3a0-0f5f71b0b9c8_malupiton.jpg",
       "PackagePath": "staticwebassets\\uploads\\ecaa71c6-d421-4038-a3a0-0f5f71b0b9c8_malupiton.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\f040365b-393e-4957-a131-59112fa0ca5d_wide leg trousers.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\f040365b-393e-4957-a131-59112fa0ca5d_wide leg trousers.jpg",
       "PackagePath": "staticwebassets\\uploads\\f040365b-393e-4957-a131-59112fa0ca5d_wide leg trousers.jpg"
     },
     {
-      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\IPT101\\src\\backend\\wwwroot\\uploads\\f7085e59-1b1b-45b5-a1ef-9bc5ccf345ae_pleated dress with detachable cape.jpg",
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\f0e8722e-6048-4f39-b154-03ecc89641a3_LacedSkirtWhite.jpg",
+      "PackagePath": "staticwebassets\\uploads\\f0e8722e-6048-4f39-b154-03ecc89641a3_LacedSkirtWhite.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\f12f17c0-a84d-408b-8bc1-4fcb587e7a7d_FilipinianaPink.png",
+      "PackagePath": "staticwebassets\\uploads\\f12f17c0-a84d-408b-8bc1-4fcb587e7a7d_FilipinianaPink.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\f7085e59-1b1b-45b5-a1ef-9bc5ccf345ae_pleated dress with detachable cape.jpg",
       "PackagePath": "staticwebassets\\uploads\\f7085e59-1b1b-45b5-a1ef-9bc5ccf345ae_pleated dress with detachable cape.jpg"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\fa48c430-9a8f-4079-aec7-04474cb52c97_KnittedSkirtCoordPinkishBrown.png",
+      "PackagePath": "staticwebassets\\uploads\\fa48c430-9a8f-4079-aec7-04474cb52c97_KnittedSkirtCoordPinkishBrown.png"
+    },
+    {
+      "Id": "C:\\Users\\ADZ\\Documents\\GitHub\\SIA102x - Copy\\src\\backend\\wwwroot\\uploads\\fc46886d-fe24-426a-90c3-458466082a01_FilipinianaBlue.png",
+      "PackagePath": "staticwebassets\\uploads\\fc46886d-fe24-426a-90c3-458466082a01_FilipinianaBlue.png"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.backend.Microsoft.AspNetCore.StaticWebAssets.props",

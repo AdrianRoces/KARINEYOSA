@@ -1,30 +1,25 @@
-// API Endpoints
-export const API_BASE_URL = 'http://localhost:5231/api';
-export const PRODUCTS_ENDPOINT = '/product';
-export const ORDERS_ENDPOINT = '/product/orders';
+// Supabase data is fetched directly via helpers.js
+// No longer using API endpoints
 
 // Platform names
 export const PLATFORMS = {
   FACEBOOK: 'facebook',
-  INSTAGRAM: 'instagram',
-  SHOPEE: 'shopee'
+  INSTAGRAM: 'instagram'
 };
 
 // Platform display names
 export const PLATFORM_DISPLAY_NAMES = {
   facebook: 'Facebook',
-  instagram: 'Instagram',
-  shopee: 'Shopee'
+  instagram: 'Instagram'
 };
 
 // Stock icons mapping
-export const STOCK_ICONS = ['pisbok.png', 'shopee.png', 'instagram.png'];
+export const STOCK_ICONS = ['pisbok.png', 'instagram.png'];
 
 // Platform icon mapping
 export const PLATFORM_ICON_MAP = {
   'Facebook': 'pisbok.png',
-  'Instagram': 'instagram.png',
-  'Shopee': 'shopee.png'
+  'Instagram': 'instagram.png'
 };
 
 // Default dashboard data structure
@@ -37,13 +32,11 @@ export const DEFAULT_DASHBOARD_DATA = {
   topProducts: [],
   stocksByPlatform: {
     facebook: 0,
-    instagram: 0,
-    shopee: 0
+    instagram: 0
   },
   ordersByPlatform: {
     facebook: 0,
-    instagram: 0,
-    shopee: 0
+    instagram: 0
   }
 };
 

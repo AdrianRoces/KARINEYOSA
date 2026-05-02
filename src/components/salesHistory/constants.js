@@ -1,7 +1,5 @@
-// API Endpoints
-export const API_BASE_URL = 'http://localhost:5231/api';
-export const PRODUCTS_ENDPOINT = '/product';
-export const ORDERS_ENDPOINT = '/product/orders';
+// Supabase data is fetched directly via helpers.js
+// No longer using API endpoints
 
 // View periods
 export const VIEW_PERIODS = {

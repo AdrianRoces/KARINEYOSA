@@ -15,7 +15,7 @@ export default function FilterSection({
 }) {
   return (
     <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] p-6 rounded-xl shadow-[0_4px_8px_rgba(101,54,111,0.2)] mb-6">
-      <h2 className="text-lg font-semibold text-[#841c4f] mb-4 font-['OFL_Sorts_Mill_Goudy_TT']">Filters</h2>
+      <h2 className="text-lg font-semibold text-[#841c4f] mb-4 font-['Satoshi']">Filters</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="flex flex-col">
           <label htmlFor="datePicker" className="text-sm font-medium text-[#841c4f] mb-2">Date:</label>
@@ -39,6 +39,7 @@ export default function FilterSection({
             <option value="day">Daily</option>
             <option value="week">Weekly</option>
             <option value="month">Monthly</option>
+            <option value="year">Yearly</option>
           </select>
         </div>
         

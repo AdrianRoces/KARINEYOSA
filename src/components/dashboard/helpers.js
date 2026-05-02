@@ -1,34 +1,35 @@
 import { PLATFORMS, PROFIT_MARGIN, TOP_PRODUCTS_LIMIT } from './constants';
+import { supabase } from '../../supabase';
 
 /**
- * Fetches all products from the API
+ * Fetches all products from Supabase
  */
 export const fetchProducts = async () => {
-  const response = await fetch('http://localhost:5231/api/product', {
-    headers: {
-      Accept: 'application/json',
-    },
-  });
+  const { data, error } = await supabase
+    .from('products')
+    .select('*');
 
-  if (!response.ok) {
+  if (error) {
     throw new Error('Failed to fetch products');
   }
 
-  return await response.json();
+  return data || [];
 };
 
 /**
- * Fetches all orders for a specific product
+ * Fetches all orders from Supabase
  */
 export const fetchProductOrders = async (productId) => {
-  const response = await fetch(
-    `http://localhost:5231/api/product/orders/${productId}`
-  );
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('product_id', productId);
   
-  if (response.ok) {
-    return await response.json();
+  if (error) {
+    console.error('Error fetching orders:', error);
+    return [];
   }
-  return [];
+  return data || [];
 };
 
 /**

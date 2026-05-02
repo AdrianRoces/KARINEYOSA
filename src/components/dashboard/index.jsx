@@ -1,76 +1,134 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../../supabase';
 import InventoryHeader from './InventoryHeader';
 import StatCard from './StatCard';
 import PaymentStatusCard from './PaymentStatusCard';
 import SalesOverviewChart from './SalesOverviewChart';
 import SalesByPlatformCard from './SalesByPlatformCard';
+import OrderStatsDropdown from './OrderStatsDropdown';
+import CustomerTypeDropdown from './CustomerTypeDropdown';
+import ExpensesCard from './ExpensesCard';
+import EmployeePerformance from './EmployeePerformance';
 
 export default function DashboardPage() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDateRange, setSelectedDateRange] = useState('today');
   const [dashboardData, setDashboardData] = useState({
     totalStocks: 0,
-    totalRevenue: 0,
-    netProfit: 0,
+    inventoryPriceTotal: 0,
+    inventoryCostTotal: 0,
+    potentialSalesMargin: 0,
+    netSales: 0,
+    margin: 0,
+    totalExpenses: 0,
+    profit: 0,
+    totalCustomers: 0,
+    newCustomers: 0,
+    regularCustomers: 0,
+    loyalCustomers: 0,
+    bogusCustomers: 0,
     salesByCategory: [],
     salesByPlatform: [],
     topProducts: [],
-    stocksByPlatform: {
-      facebook: 0,
-      instagram: 0
-    },
-    ordersByPlatform: {
-      facebook: 0,
-      instagram: 0
-    }
+    stocksByPlatform: { facebook: 0, instagram: 0 },
+    ordersByPlatform: { facebook: 0, instagram: 0 },
+    totalOrders: 0,
+    activeOrders: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
+    totalPaidOrders: 0,
+    totalPendingOrders: 0,
+    salesTrendData: []
   });
 
   useEffect(() => {
     fetchProductsAndOrders();
   }, []);
 
+  useEffect(() => {
+    const handleDateRangeChange = (event) => {
+      setSelectedDateRange(event.detail);
+    };
+    window.addEventListener('dateRangeChange', handleDateRangeChange);
+    return () => window.removeEventListener('dateRangeChange', handleDateRangeChange);
+  }, []);
+
+  useEffect(() => {
+    if (orders.length > 0 && products.length > 0) {
+      const filteredOrders = filterOrdersByDateRange(orders, selectedDateRange);
+      const fetchAndCalculate = async () => {
+        try {
+          const { data, error } = await supabase.from('expenses').select('amount');
+          const totalExpenses = error ? 0 : (data || []).reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
+          calculateDashboardData(products, filteredOrders, customers, totalExpenses);
+        } catch (error) {
+          console.error('Error fetching expenses:', error);
+          calculateDashboardData(products, filteredOrders, customers, 0);
+        }
+      };
+      fetchAndCalculate();
+    }
+  }, [selectedDateRange, orders, products, customers]);
+
   const fetchProductsAndOrders = async () => {
     try {
-      // Fetch products
-      const productsResponse = await fetch('http://localhost:5231/api/product', {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+      const [productsRes, ordersRes, customersRes, expensesRes] = await Promise.all([
+        supabase.from('products').select('*, sizes(*)'),
+        supabase.from('orders').select('*'),
+        supabase.from('customers').select('*'),
+        supabase.from('expenses').select('amount')
+      ]);
 
-      if (!productsResponse.ok) {
-        throw new Error('Failed to fetch products');
-      }
+      if (productsRes.error) throw productsRes.error;
+      if (ordersRes.error) throw ordersRes.error;
+      if (customersRes.error) throw customersRes.error;
 
-      const productsData = await productsResponse.json();
+      const productsData = productsRes.data || [];
       setProducts(productsData);
 
-      // Fetch all orders for all products
-      const allOrders = [];
-      for (const product of productsData) {
-        const ordersResponse = await fetch(
-          `http://localhost:5231/api/product/orders/${product.id}`
-        );
-        
-        if (ordersResponse.ok) {
-          const productOrders = await ordersResponse.json();
-          // Add product information to each order
-          const ordersWithProductInfo = productOrders.map(order => ({
-            ...order,
-            productId: product.id,
-            productName: product.name,
-            productCategory: product.category,
-            productPrice: product.price
-          }));
-          allOrders.push(...ordersWithProductInfo);
-        }
-      }
-      
+      const normalizeOrder = (o) => {
+        const matchingProduct = productsData.find(p => p.id === o.product_id);
+        return {
+          id: o.id,
+          transactionId: o.transaction_id || `single-${o.id}`, // Add transaction ID for grouping
+          customer_id: o.customer_id,
+          customerName: o.customer_name || '',
+          quantity: Number(o.quantity || 0),
+          platform: (o.platform || '').toString(),
+          unit_price: Number(o.unit_price || 0),
+          profit_per_unit: Number(o.profit_per_unit || 0),
+          totalAmount: Number(o.total_amount || 0), // Strictly item subtotal
+          totalProfit: Number(o.total_profit || 0), // Strictly item profit
+          shippingFee: Number(o.shipping_fee || 0), // Kept separate and handled securely
+          isPaid: o.is_paid || false,
+          status: (o.status || '').toString(),
+          orderDate: o.order_date,
+          productId: o.product_id,
+          productCategory: matchingProduct ? matchingProduct.category : 'uncategorized',
+          _raw: o
+        };
+      };
+
+      const allOrders = (ordersRes.data || []).map(normalizeOrder);
       setOrders(allOrders);
+
+      const normalizeCustomer = (c) => ({
+        ...c,
+        firstOrderDate: c.first_order_date,
+        lastOrderDate: c.last_order_date,
+        finalTag: c.manual_bogus ? 'bogus' : (c.is_repeat_customer ? 'loyal' : (c.total_orders > 1 ? 'regular' : 'new'))
+      });
+
+      const allCustomers = (customersRes.data || []).map(normalizeCustomer);
+      setCustomers(allCustomers);
+
+      const totalExpenses = (expensesRes.data || []).reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
       
-      // Calculate dashboard data with products and orders
-      calculateDashboardData(productsData, allOrders);
+      const filteredOrders = filterOrdersByDateRange(allOrders, selectedDateRange);
+      calculateDashboardData(productsData, filteredOrders, allCustomers, totalExpenses);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -78,191 +136,284 @@ export default function DashboardPage() {
     }
   };
 
-  const calculateDashboardData = (products, orders) => {
-    // initially filter out any shopee orders from global list
-    const visibleOrders = orders.filter(o => o.platform?.toLowerCase() !== 'shopee');
+  const filterOrdersByDateRange = (ordersToFilter, dateRange) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    // Filter to only include paid/pending on visible dataset
-    const paidOrders = visibleOrders.filter(order => order.isPaid);
-    const pendingOrders = visibleOrders.filter(order => !order.isPaid);
-    
-    // Calculate total stocks
-    const totalStocks = products.reduce((total, product) => {
-      return total + (product.sizes?.small || 0) + (product.sizes?.medium || 0) + (product.sizes?.large || 0);
-    }, 0);
+    return ordersToFilter.filter(order => {
+      if (!order.orderDate) return false;
+      const orderDate = new Date(order.orderDate);
+      const orderDateOnly = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
 
-    // Calculate stocks by platform
-    const stocksByPlatform = {
-      facebook: 0,
-      instagram: 0
-    };
-    
-    // Count total orders by platform (both paid and pending)
-    const ordersByPlatform = {
-      facebook: 0,
-      instagram: 0
-    };
-    
-    // Count orders by platform (only facebook/instagram now)
-    visibleOrders.forEach(order => {
-      switch(order.platform?.toLowerCase()) {
-        case 'facebook':
-          ordersByPlatform.facebook += 1;
-          break;
-        case 'instagram':
-          ordersByPlatform.instagram += 1;
-          break;
-        default:
-          break;
+      switch (dateRange) {
+        case 'today': return orderDateOnly.getTime() === today.getTime();
+        case 'last7days': {
+          const sevenDaysAgo = new Date(today);
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          return orderDateOnly >= sevenDaysAgo && orderDateOnly <= today;
+        }
+        case 'last30days': {
+          const thirtyDaysAgo = new Date(today);
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          return orderDateOnly >= thirtyDaysAgo && orderDateOnly <= today;
+        }
+        case 'lastyear': {
+          const oneYearAgo = new Date(today);
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+          return orderDateOnly >= oneYearAgo && orderDateOnly <= today;
+        }
+        case 'all':
+        default: return true;
       }
     });
-    
-    // Calculate total orders stats using filtered list
-    const totalOrders = visibleOrders.length;
-    const totalPaidOrders = visibleOrders.filter(o => o.isPaid).length;
-    const totalPendingOrders = visibleOrders.filter(o => !o.isPaid).length;
+  };
 
-    // Track product sales for paid orders only
-    const filteredPaid = visibleOrders.filter(o => o.isPaid);
+  const filterCustomersByDateRange = (customersToFilter, dateRange) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    return customersToFilter.filter(customer => {
+      if (!customer.firstOrderDate) return false;
+      const customerDate = new Date(customer.firstOrderDate);
+      const customerDateOnly = new Date(customerDate.getFullYear(), customerDate.getMonth(), customerDate.getDate());
+
+      switch (dateRange) {
+        case 'today': return customerDateOnly.getTime() === today.getTime();
+        case 'last7days': {
+          const sevenDaysAgo = new Date(today);
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          return customerDateOnly >= sevenDaysAgo && customerDateOnly <= today;
+        }
+        case 'last30days': {
+          const thirtyDaysAgo = new Date(today);
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          return customerDateOnly >= thirtyDaysAgo && customerDateOnly <= today;
+        }
+        case 'lastyear': {
+          const oneYearAgo = new Date(today);
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+          return customerDateOnly >= oneYearAgo && customerDateOnly <= today;
+        }
+        case 'all':
+        default: return true;
+      }
+    });
+  };
+
+  // Helper function to extract unique transactions
+  const getUniqueTransactions = (orderList) => {
+    const txns = new Map();
+    orderList.forEach(order => {
+      if (!txns.has(order.transactionId)) {
+        txns.set(order.transactionId, order);
+      }
+    });
+    return Array.from(txns.values());
+  };
+
+  const calculateDashboardData = (products, orders, customers, totalExpenses = 0) => {
+    const filteredCustomers = filterCustomersByDateRange(customers, selectedDateRange);
+    
+    const getProductStock = (product) => {
+      if (product.sizes && product.sizes.length > 0) {
+        return product.sizes[0].remaining_quantity || 0;
+      }
+      return 0;
+    };
+
+    const getProductPrice = (product) => Number(product.price || 0);
+    const getProductCost = (product) => Number(product.actual_cost || 0);
+
+    const totalStocks = products.reduce((total, product) => total + getProductStock(product), 0);
+    const inventoryPriceTotal = products.reduce((total, product) => total + (getProductStock(product) * getProductPrice(product)), 0);
+    const inventoryCostTotal = products.reduce((total, product) => total + (getProductStock(product) * getProductCost(product)), 0);
+    const potentialSalesMargin = inventoryPriceTotal - inventoryCostTotal;
+
+    // Fix: Calculate order stats based on unique transactions, not individual rows
+    const uniqueOrders = getUniqueTransactions(orders);
+    const totalOrders = uniqueOrders.length;
+    const activeOrders = uniqueOrders.filter(o => o.status?.toLowerCase() === 'active' || o.status?.toLowerCase() === 'pending').length;
+    const completedOrders = uniqueOrders.filter(o => o.status?.toLowerCase() === 'completed').length;
+    const cancelledOrders = uniqueOrders.filter(o => o.status?.toLowerCase() === 'cancelled').length;
+    
+    const activeOrdersList = orders.filter(order => order.status?.toLowerCase() !== 'cancelled');
+    const paidOrders = activeOrdersList.filter(order => order.isPaid);
+
+    // Fix: Compute payment status strictly by unique transactions
+    const uniqueActiveOrders = getUniqueTransactions(activeOrdersList);
+    const totalPaidOrders = uniqueActiveOrders.filter(o => o.isPaid).length;
+    const totalPendingOrders = uniqueActiveOrders.filter(o => !o.isPaid).length;
+
+    const stocksByPlatform = { facebook: 0, instagram: 0 };
+    const ordersByPlatform = { facebook: 0, instagram: 0 };
+    
+    // Group platform sales by unique active transactions
+    uniqueActiveOrders.forEach(order => {
+      if (order.platform?.toLowerCase() === 'facebook') ordersByPlatform.facebook += 1;
+      if (order.platform?.toLowerCase() === 'instagram') ordersByPlatform.instagram += 1;
+    });
+    
+    let newCustomersCount = 0;
+    let regularCustomersCount = 0;
+    let loyalCustomersCount = 0;
+    let bogusCustomersCount = 0;
+    
+    filteredCustomers.forEach(customer => {
+      const type = customer.finalTag;
+      if (type === 'new') newCustomersCount++;
+      else if (type === 'regular') regularCustomersCount++;
+      else if (type === 'loyal') loyalCustomersCount++;
+      else if (type === 'bogus') bogusCustomersCount++;
+    });
+    
+    const totalLoyalCount = loyalCustomersCount + regularCustomersCount;
+    const totalCustomers = filteredCustomers.length;
+
     const productSalesMap = {};
     const categorySales = {};
-    const platformSales = {
-      facebook: 0,
-      instagram: 0
-    };
+    const platformSales = { facebook: 0, instagram: 0 };
 
-    // Initialize product sales tracking
     products.forEach(product => {
-      productSalesMap[product.id] = {
-        id: product.id,
-        name: product.name,
-        category: product.category,
-        units: 0,
-        amount: 0
-      };
-      
-      // Initialize category sales
-      if (!categorySales[product.category]) {
-        categorySales[product.category] = 0;
+      productSalesMap[product.id] = { id: product.id, name: product.name, category: product.category, units: 0, amount: 0 };
+      if (!categorySales[product.category]) categorySales[product.category] = 0;
+      if (product.sizes && product.sizes.length > 0) {
+        stocksByPlatform.facebook += (product.sizes[0].facebook_quantity || 0);
+        stocksByPlatform.instagram += (product.sizes[0].instagram_quantity || 0);
       }
-      
-      // Calculate remaining stocks for each platform
-      const fbTotal = (product.sizes?.small || 0) - (product.sizes?.smallFB || 0);
-      const igTotal = (product.sizes?.medium || 0) - (product.sizes?.mediumIG || 0);
-      
-      // Add to platform stock totals
-      stocksByPlatform.facebook += fbTotal;
-      stocksByPlatform.instagram += igTotal;
     });
 
-    // Process paid orders to calculate sales
-    filteredPaid.forEach(order => {
-      // Update product sales data
+    paidOrders.forEach(order => {
       if (productSalesMap[order.productId]) {
-        productSalesMap[order.productId].units += order.quantity;
-        productSalesMap[order.productId].amount += order.totalAmount;
+        const qty = Number(order.quantity || 0);
+        // Include shipping fee per row correctly for overall revenue
+        const amt = Number(order.totalAmount || 0) + Number(order.shippingFee || 0); 
         
-        // Update category sales
-        categorySales[order.productCategory] += order.quantity;
-        
-        // Update platform sales
-        switch(order.platform.toLowerCase()) {
-          case 'facebook':
-            platformSales.facebook += order.totalAmount;
-            break;
-          case 'instagram':
-            platformSales.instagram += order.totalAmount;
-            break;
-          default:
-            break;
-        }
+        productSalesMap[order.productId].units += qty;
+        productSalesMap[order.productId].amount += amt;
+
+        const cat = order.productCategory;
+        if (cat && categorySales[cat] !== undefined) categorySales[cat] += qty;
+
+        const platformKey = (order.platform || '').toString().toLowerCase();
+        if (platformKey === 'facebook') platformSales.facebook += amt;
+        if (platformKey === 'instagram') platformSales.instagram += amt;
       }
     });
 
-    // Convert product sales map to array and sort to get top products
-    const productSalesArray = Object.values(productSalesMap);
-    const topProducts = productSalesArray
-      .sort((a, b) => b.units - a.units)
-      .slice(0, 4);
-
-    // Calculate total revenue from paid orders
-    const totalRevenue = filteredPaid.reduce((total, order) => total + order.totalAmount, 0);
-    const netProfit = totalRevenue * 0.3; // 30% profit margin
+    const topProducts = Object.values(productSalesMap).sort((a, b) => b.units - a.units).slice(0, 4);
+    
+    // Core computation logic for the cards - safely adds up item amounts + isolated shipping fees
+    const netSales = paidOrders.reduce((total, order) => total + (Number(order.totalAmount) || 0) + (Number(order.shippingFee) || 0), 0);
+    const totalProductProfit = paidOrders.reduce((total, order) => total + (Number(order.totalProfit) || 0), 0);
+    
+    // Fix: Removed shipping fees from margin and profit
+    const margin = totalProductProfit;
+    const profit = margin - totalExpenses;
+    
+    const salesTrendData = generateSalesTrendData(paidOrders);
 
     setDashboardData({
-      totalStocks,
-      totalRevenue,
-      netProfit,
-      salesByCategory: Object.entries(categorySales).map(([category, sales]) => ({
-        name: category,
-        value: sales
-      })),
-      salesByPlatform: Object.entries(platformSales).map(([platform, sales]) => ({
-        name: platform.charAt(0).toUpperCase() + platform.slice(1),
-        value: sales
-      })),
-      topProducts,
-      stocksByPlatform,
-      ordersByPlatform,
-      totalOrders,
-      totalPaidOrders,
-      totalPendingOrders
+      totalStocks, inventoryPriceTotal, inventoryCostTotal, potentialSalesMargin,
+      netSales, margin, totalExpenses, profit,
+      totalCustomers, newCustomers: newCustomersCount, loyalCustomers: totalLoyalCount, 
+      regularCustomers: regularCustomersCount, bogusCustomers: bogusCustomersCount,
+      salesByCategory: Object.entries(categorySales).filter(([_, sales]) => sales > 0).map(([name, value]) => ({ name, value })),
+      salesByPlatform: Object.entries(platformSales).filter(([_, sales]) => sales > 0).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value })),
+      topProducts, stocksByPlatform, ordersByPlatform,
+      totalOrders, activeOrders, completedOrders, cancelledOrders, totalPaidOrders, totalPendingOrders, salesTrendData
     });
+  };
+
+  const generateSalesTrendData = (orders) => {
+    const trendMap = {};
+    orders.forEach((order) => {
+      if (!order.orderDate) return;
+      const orderDate = new Date(order.orderDate);
+      const weekStartDate = new Date(orderDate);
+      weekStartDate.setDate(weekStartDate.getDate() - weekStartDate.getDay());
+      const weekKey = `Week of ${weekStartDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      
+      if (!trendMap[weekKey]) trendMap[weekKey] = { sales: 0, revenue: 0, profit: 0, date: weekStartDate.getTime() };
+      
+      trendMap[weekKey].sales += order.quantity || 0;
+      // Re-add isolated shipping back for proper trend charts for revenue
+      trendMap[weekKey].revenue += (Number(order.totalAmount) || 0) + (Number(order.shippingFee) || 0);
+      
+      // Keep shipping fee strictly out of profit trends
+      trendMap[weekKey].profit += Number(order.totalProfit || 0); 
+    });
+    
+    return Object.entries(trendMap).sort(([, a], [, b]) => a.date - b.date).map(([name, data]) => ({
+      name, sales: data.sales, Revenue: Math.round(data.revenue), Profit: Math.round(data.profit)
+    }));
+  };
+
+  const handleNavigate = (section) => {
+    window.dispatchEvent(new CustomEvent('navigateToSection', { detail: section }));
   };
 
   if (loading) {
     return (
-      <div className="mt-1 p-4 font-['cinzel'] overflow-x-hidden">
-        <div className="w-full max-w-[1220px] ml-[60px]">
-          Loading dashboard data...
-        </div>
+      <div className="mt-1 p-4 font-satoshi overflow-x-hidden flex items-center justify-center min-h-screen">
+        <div className="text-center text-xl text-[#280A4F]">Loading dashboard data...</div>
       </div>
     );
   }
 
   return (
-    <div className="mt-1 p-4 font-['cinzel'] overflow-x-hidden">
-      <div className="w-full max-w-[1220px] ml-[60px]">
-        {/* Inventory Header with Orders by Platform */}
-        <InventoryHeader 
-          totalStocks={dashboardData.totalStocks}
-          ordersByPlatform={dashboardData.ordersByPlatform}
-        />
-
-        {/* Row with 4 Cards - Order Statistics, Payment Status, Total Revenue, Net Profit */}
-        <div className="flex flex-col sm:flex-row gap-6 w-full mb-6">
-          <StatCard 
-            value={dashboardData.totalOrders || 0}
-            label="ORDER STATISTICS"
-            subtitle="Total Orders"
-          />
-          
-          <PaymentStatusCard 
-            totalPaidOrders={dashboardData.totalPaidOrders}
-            totalPendingOrders={dashboardData.totalPendingOrders}
-          />
-          
-          <StatCard 
-            value={`₱${dashboardData.totalRevenue.toLocaleString()}`}
-            label="TOTAL REVENUE"
-          />
-          
-          <StatCard 
-            value={`₱${dashboardData.netProfit.toLocaleString()}`}
-            label="NET PROFIT"
-          />
+    <div className="w-full h-full font-satoshi bg-gradient-to-br from-[#faf8fc] to-[#f5f0f8] overflow-auto">
+      <div className="p-4 md:p-6 lg:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6 mb-6 lg:mb-8">
+          <div className="col-span-1 lg:col-span-3 w-full">
+            <InventoryHeader
+              inventoryPriceTotal={dashboardData.inventoryPriceTotal}
+              inventoryCostTotal={dashboardData.inventoryCostTotal}
+              potentialSalesMargin={dashboardData.potentialSalesMargin}
+              onNavigateToOrders={handleNavigate}
+            />
+          </div>
+          <div className="col-span-1 lg:col-span-1 w-full">
+            <OrderStatsDropdown
+              totalOrders={dashboardData.totalOrders}
+              activeOrders={dashboardData.activeOrders}
+              completedOrders={dashboardData.completedOrders}
+              cancelledOrders={dashboardData.cancelledOrders}
+              onNavigate={handleNavigate}
+            />
+          </div>
         </div>
 
-        {/* Final Row with Charts - Sales Overview and Sales by Platform */}
-        <div className="flex flex-col lg:flex-row gap-6 w-full">
-          <SalesOverviewChart 
-            salesByCategory={dashboardData.salesByCategory}
-            topProducts={dashboardData.topProducts}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 w-full mb-6 lg:mb-8">
+          <PaymentStatusCard totalPaidOrders={dashboardData.totalPaidOrders} totalPendingOrders={dashboardData.totalPendingOrders} />
+          <StatCard value={`₱${dashboardData.netSales.toLocaleString()}`} label="NET SALES" />
+          <StatCard value={`₱${Math.round(dashboardData.margin).toLocaleString()}`} label="MARGIN" />
+          <StatCard value={`₱${Math.round(dashboardData.profit).toLocaleString()}`} label="PROFIT" />
+        </div>
 
-          <SalesByPlatformCard 
-            salesByPlatform={dashboardData.salesByPlatform}
-          />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 w-full mb-6 xl:mb-8">
+          <div className="flex flex-col gap-4 xl:gap-4 xl:col-span-1">
+            <CustomerTypeDropdown
+              totalCustomers={dashboardData.totalCustomers}
+              newCustomers={dashboardData.newCustomers}
+              regularCustomers={dashboardData.regularCustomers}
+              loyalCustomers={dashboardData.loyalCustomers}
+              bogusCustomers={dashboardData.bogusCustomers}
+              onNavigate={handleNavigate}
+            />
+            <ExpensesCard />
+            <SalesByPlatformCard salesByPlatform={dashboardData.salesByPlatform} />
+          </div>
+          <div className="xl:col-span-2 h-full">
+            <SalesOverviewChart
+              salesByCategory={dashboardData.salesByCategory}
+              topProducts={dashboardData.topProducts}
+              salesTrendData={dashboardData.salesTrendData}
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 lg:mt-8 w-full">
+          <EmployeePerformance />
         </div>
       </div>
     </div>

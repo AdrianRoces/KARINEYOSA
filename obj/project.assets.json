@@ -840,11 +840,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\QCU\\Documents\\GitHub\\IPT101\\IPT101.csproj",
-      "projectName": "IPT101",
-      "projectPath": "c:\\Users\\QCU\\Documents\\GitHub\\IPT101\\IPT101.csproj",
+      "projectUniqueName": "c:\\Users\\QCU\\Documents\\GitHub\\SIA102X0\\SIA102X0.csproj",
+      "projectName": "SIA102X0",
+      "projectPath": "c:\\Users\\QCU\\Documents\\GitHub\\SIA102X0\\SIA102X0.csproj",
       "packagesPath": "C:\\Users\\QCU\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\QCU\\Documents\\GitHub\\IPT101\\obj\\",
+      "outputPath": "c:\\Users\\QCU\\Documents\\GitHub\\SIA102X0\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

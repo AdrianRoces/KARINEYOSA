@@ -20,12 +20,25 @@ export default {
       },
       fontFamily: {
         'goudy': ['OFL_Sorts_Mill_Goudy_TT', 'serif'],
+        'satoshi': ['Satoshi', 'sans-serif'],
       },
       flex: {
         '3': '3 3 0%'
       }
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.scrollbar-hide': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        },
+      })
+    },
+  ],
 }
 

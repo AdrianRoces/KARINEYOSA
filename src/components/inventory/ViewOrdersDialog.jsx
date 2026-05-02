@@ -1,24 +1,67 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { supabase } from '../../supabase';
+import EditOrderDialog from './EditOrderDialog';
+import CancelOrderDialog from './CancelOrderDialog';
+import CancelledOrdersDialog from './CancelledOrdersDialog';
 
 function ViewOrdersDialog({ product, onClose }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showPopup, setShowPopup] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showCancelledOrders, setShowCancelledOrders] = useState(false);
 
   useEffect(() => {
     fetchOrders();
   }, [product.id]);
 
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        if (showCancelledOrders) {
+          setShowCancelledOrders(false);
+        } else if (showEditDialog || showCancelDialog) {
+          // Let the dialogs handle their own escape
+        } else {
+          onClose();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose, showCancelledOrders, showEditDialog, showCancelDialog]);
+
   const fetchOrders = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5231/api/product/orders/${product.id}`
-      );
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      const data = await response.json();
-      setOrders(data || []);
+      // Fetch orders for this product from Supabase
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('product_id', product.id)
+        .order('order_date', { ascending: false });
+
+      if (ordersError) throw ordersError;
+
+      // Fetch all customers for tag mapping
+      const { data: customersData, error: customersError } = await supabase
+        .from('customers')
+        .select('*');
+
+      if (customersError) throw customersError;
+
+      // Create a map of customerId to customer data for quick lookup
+      const customersMap = new Map((customersData || []).map(c => [c.id, c]));
+
+      // Map is_repeat_customer to tag
+      const enrichedOrders = (ordersData || []).map(order => ({
+        ...order,
+        customerTag: order.customer_id ? (customersMap.get(order.customer_id)?.is_repeat_customer ? 'Loyal' : 'Regular') : 'New'
+      }));
+
+      setOrders(enrichedOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
       toast.error('Failed to load orders');
@@ -27,141 +70,160 @@ function ViewOrdersDialog({ product, onClose }) {
     }
   };
 
-  const handlePaymentToggle = async (order) => {
+  const handleEdit = (order) => {
     setSelectedOrder(order);
-    setShowPopup(true);
+    setShowEditDialog(true);
   };
 
-  const confirmPaymentChange = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:5231/api/product/orders/${selectedOrder.id}/updatePayment`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            isPaid: !selectedOrder.isPaid,
-          }),
-        }
-      );
+  const handleCancel = (order) => {
+    setSelectedOrder(order);
+    setShowCancelDialog(true);
+  };
 
-      if (!response.ok) throw new Error('Failed to update payment status');
+  const handleOrderSuccess = async () => {
+    await fetchOrders();
+  };
 
-      // the server may not return the modified object immediately, so perform an
-      // optimistic local update to keep the UI in sync without requiring a
-      // refresh/close-open cycle.
-      setOrders((prev) =>
-        prev.map((o) =>
-          o.id === selectedOrder.id ? { ...o, isPaid: !o.isPaid } : o
-        )
-      );
-      // also update selectedOrder so the popup text toggles correctly
-      setSelectedOrder((prev) =>
-        prev ? { ...prev, isPaid: !prev.isPaid } : prev
-      );
+  if (showCancelledOrders) {
+    return <CancelledOrdersDialog product={product} onClose={() => setShowCancelledOrders(false)} />;
+  }
 
-      // if you prefer to trust the backend response you could re-fetch:
-      // await fetchOrders();
+  const activeOrders = orders.filter(order => order.status !== 'Cancelled');
+  const cancelledCount = orders.filter(order => order.status === 'Cancelled').length;
 
-      setShowPopup(false);
-      toast.success(
-        `✅ Status updated to ${!selectedOrder.isPaid ? 'Paid' : 'Pending'}!`,
-        {
-          position: 'top-right',
-          autoClose: 3000,
-          theme: 'colored',
-        }
-      );
-    } catch (error) {
-      console.error('Error updating payment status:', error);
-      toast.error('Failed to update payment status');
-    }
+  // Compute strictly without shipping logic for accurate product-level reporting
+  const totals = {
+    revenue: activeOrders.reduce((sum, o) => sum + ((o.quantity || 0) * (o.unitPrice || o.unit_price || 0)), 0),
+    quantity: activeOrders.reduce((sum, o) => sum + o.quantity, 0),
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-6 w-[800px] shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-[#841c4f] text-xl font-bold">ORDERS</h2>
+    <div 
+      className="fixed inset-0 min-h-screen bg-black/50 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 overflow-hidden p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <style>{`body { overflow: hidden; }`}</style>
+      <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-4 md:p-6 w-full max-w-6xl shadow-lg max-h-[90vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex justify-between items-start gap-3 mb-3 md:mb-5 pb-3 md:pb-4 border-b-2 border-[#d2679f]/30 flex-shrink-0">
+          <div className="flex flex-col gap-2 flex-1 min-w-0">
+            <h2 className="text-base md:text-xl font-bold text-[#841c4f] truncate">ORDERS FOR {product.name?.toUpperCase()}</h2>
+            {cancelledCount > 0 && (
+              <button
+                onClick={() => setShowCancelledOrders(true)}
+                className="px-2 md:px-3 py-1 bg-red-200 hover:bg-red-300 text-red-800 rounded text-xs font-semibold transition-colors w-fit"
+              >
+                View Cancelled ({cancelledCount})
+              </button>
+            )}
+          </div>
           <button
             onClick={onClose}
-            className="text-[#841c4f] text-2xl hover:text-red-600"
+            className="text-2xl md:text-3xl text-[#841c4f] hover:text-red-600 font-bold flex-shrink-0"
           >
             ×
           </button>
         </div>
 
         {loading ? (
-          <div className="text-center py-4">Loading orders...</div>
+          <div className="text-center py-8 text-gray-600 flex-1 flex items-center justify-center">Loading orders...</div>
+        ) : activeOrders.length === 0 ? (
+          <div className="text-center py-12 text-gray-600 flex-1 flex items-center justify-center">No active orders</div>
         ) : (
-          <div className="max-h-[400px] overflow-y-auto relative">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-white/80 backdrop-blur-sm text-[#841c4f]">
-                  <th className="py-2 px-4 text-left">Names</th>
-                  <th className="py-2 px-4">Quantity</th>
-                  <th className="py-2 px-4">Size</th>
-                  <th className="py-2 px-4">Platform</th>
-                  <th className="py-2 px-4">Total Amount</th>
-                  <th className="py-2 px-4">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="border-b border-[#d2679f]/30 bg-white/60 backdrop-blur-sm"
-                  >
-                    <td className="py-2 px-4">{order.customerName}</td>
-                    <td className="py-2 px-4 text-center">{order.quantity}</td>
-                    <td className="py-2 px-4 text-center">{order.size}</td>
-                    <td className="py-2 px-4 text-center">{order.platform}</td>
-                    <td className="py-2 px-4 text-center">
-                      ₱{order.totalAmount.toFixed(2)}
-                    </td>
-                    <td className="py-2 px-4 text-center">
-                      <button
-                        onClick={() => handlePaymentToggle(order)}
-                        className={`px-3 py-1 rounded-full cursor-pointer transition-colors ${
-                          order.isPaid
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                            : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                        }`}
-                      >
-                        {order.isPaid ? 'Paid' : 'Pending'}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {showPopup && selectedOrder && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]">
-                <div className="bg-white rounded-lg shadow-xl p-6 w-80 border-2 border-[#841c4f]/20 transform scale-110">
-                  <p className="text-center text-[#841c4f] text-lg mb-6 font-semibold">
-                    Change status to {selectedOrder.isPaid ? 'Pending' : 'Paid'}?
-                  </p>
-                  <div className="flex justify-center gap-4">
-                    <button
-                      onClick={confirmPaymentChange}
-                      className="px-8 py-2 bg-[#841c4f] text-white rounded-lg hover:bg-[#641c3f] transition-colors font-semibold"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      onClick={() => setShowPopup(false)}
-                      className="px-8 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
-                    >
-                      No
-                    </button>
-                  </div>
-                </div>
+          <>
+            {/* Totals Summary */}
+            <div className="grid grid-cols-2 gap-2 md:gap-3 mb-3 md:mb-4 flex-shrink-0">
+              <div className="bg-white/80 p-2 md:p-3 rounded-lg border-2 border-[#d2679f]/30">
+                <p className="text-xs text-gray-600 font-semibold">Total Revenue</p>
+                <p className="text-base md:text-lg font-bold text-[#841c4f]">₱{totals.revenue.toFixed(2)}</p>
               </div>
-            )}
-          </div>
+              <div className="bg-white/80 p-2 md:p-3 rounded-lg border-2 border-[#d2679f]/30">
+                <p className="text-xs text-gray-600 font-semibold">Total Units</p>
+                <p className="text-base md:text-lg font-bold text-[#841c4f]">{totals.quantity}</p>
+              </div>
+            </div>
+
+            {/* Orders Table */}
+            <div className="overflow-x-auto flex-1 min-h-0">
+              <table className="min-w-[900px] w-full border-collapse text-xs md:text-sm">
+                <thead className="sticky top-0">
+                      <tr className="bg-[#d4b5d4]">
+                        <th className="py-2 px-2 md:px-3 text-left text-[#841c4f] font-bold whitespace-nowrap">Customer</th>
+                        <th className="py-2 px-2 md:px-3 text-center text-[#841c4f] font-bold whitespace-nowrap hidden sm:table-cell">Type</th>
+                        <th className="py-2 px-2 md:px-3 text-center text-[#841c4f] font-bold">Qty</th>
+                        <th className="py-2 px-2 md:px-3 text-center text-[#841c4f] font-bold whitespace-nowrap hidden md:table-cell">Platform</th>
+                        <th className="py-2 px-2 md:px-3 text-center text-[#841c4f] font-bold whitespace-nowrap">Payment</th>
+                        <th className="py-2 px-2 md:px-3 text-right text-[#841c4f] font-bold">Revenue</th>
+                        <th className="py-2 px-2 md:px-3 text-center text-[#841c4f] font-bold whitespace-nowrap hidden sm:table-cell">Status</th>
+                        <th className="py-2 px-2 md:px-3 text-center text-[#841c4f] font-bold">Actions</th>
+                      </tr>
+                </thead>
+                <tbody>
+                  {activeOrders.map((order, index) => {
+                    const rowRevenue = (order.quantity || 0) * (order.unitPrice || order.unit_price || 0);
+                    return (
+                      <tr
+                        key={order.id}
+                        className={`${index % 2 === 0 ? 'bg-white' : 'bg-[#f9f4f9]'} hover:bg-purple-100 transition-colors border-b border-[#d2679f]/30`}
+                      >
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-gray-800 font-medium truncate">{order.customerName}</td>
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-center hidden sm:table-cell">
+                          {order.customerTag === 'Bogus' ? (
+                            <span className="text-xs bg-red-200 text-red-800 px-1 md:px-2 py-1 rounded font-semibold inline-block">Bogus</span>
+                          ) : order.customerTag === 'Loyal' ? (
+                            <span className="text-xs bg-green-200 text-green-800 px-1 md:px-2 py-1 rounded font-semibold inline-block">Loyal</span>
+                          ) : order.customerTag === 'Regular' ? (
+                            <span className="text-xs bg-amber-200 text-amber-800 px-1 md:px-2 py-1 rounded font-semibold inline-block">Regular</span>
+                          ) : (
+                            <span className="text-xs bg-blue-200 text-blue-800 px-1 md:px-2 py-1 rounded font-semibold inline-block">New</span>
+                          )}
+                        </td>
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-center text-gray-800">{order.quantity}</td>
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-center text-gray-800 text-xs hidden md:table-cell">{order.platform}</td>
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-center">
+                          {order.isPaid ? (
+                            <span className="text-xs bg-green-100 text-green-800 px-1 md:px-2 py-1 rounded font-semibold inline-block">Paid</span>
+                          ) : (
+                            <span className="text-xs bg-yellow-100 text-yellow-800 px-1 md:px-2 py-1 rounded font-semibold inline-block">Pending</span>
+                          )}
+                        </td>
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-right text-gray-800 font-semibold whitespace-nowrap">₱{rowRevenue.toFixed(2)}</td>
+                        <td className="py-2 md:py-3 px-2 md:px-3 text-center hidden sm:table-cell">
+                          {order.status === 'Completed' ? (
+                            <span className="px-1 md:px-2 py-1 bg-blue-200 text-blue-800 rounded text-xs font-semibold inline-block">Completed</span>
+                          ) : (
+                            <span className="px-1 md:px-2 py-1 bg-purple-200 text-purple-800 rounded text-xs font-semibold inline-block">Active</span>
+                          )}
+                        </td>
+                        <td className="py-2 md:py-3 px-2 md:px-3">
+                          <div className="flex gap-1 justify-center flex-wrap">
+                            <button onClick={() => handleEdit(order)} className="px-1 md:px-2 py-1 bg-blue-200 hover:bg-blue-300 text-blue-800 rounded text-xs font-semibold transition-colors whitespace-nowrap">Edit</button>
+                            <button onClick={() => handleCancel(order)} className="px-1 md:px-2 py-1 bg-red-200 hover:bg-red-300 text-red-800 rounded text-xs font-semibold transition-colors whitespace-nowrap">Cancel</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {showEditDialog && selectedOrder && (
+          <EditOrderDialog
+            order={selectedOrder}
+            onClose={() => setShowEditDialog(false)}
+            onSuccess={handleOrderSuccess}
+          />
+        )}
+
+        {showCancelDialog && selectedOrder && (
+          <CancelOrderDialog
+            order={selectedOrder}
+            onClose={() => setShowCancelDialog(false)}
+            onSuccess={handleOrderSuccess}
+          />
         )}
       </div>
     </div>

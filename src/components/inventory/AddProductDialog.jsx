@@ -1,234 +1,333 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { PRODUCT_CATEGORIES } from './constants';
+import { supabase } from '../../supabase';
 
 function AddProductDialog({ onClose, fetchProducts }) {
   const [formData, setFormData] = useState({
     name: '',
+    variantName: '',
     category: '',
-    price: '',
+    totalStock: 0,
+    sellingPrice: '',
+    actualCost: '',
     image: null,
-    small: 0,
-    medium: 0,
-    large: 0,
   });
+
+  const [currentUser, setCurrentUser] = useState('Unknown User');
+
+  // Fetch the current logged-in user to log who added the initial stock
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+    setCurrentUser(userInfo.Username || userInfo.username || userInfo.name || 'Unknown User');
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.name.trim()) {
+      toast.error('❌ Product name is required', { autoClose: 3000, theme: 'colored' });
+      return;
+    }
+
+    if (!formData.category) {
+      toast.error('❌ Category is required', { autoClose: 3000, theme: 'colored' });
+      return;
+    }
+
+    if (formData.totalStock <= 0) {
+      toast.error('❌ Total stock must be greater than 0', { autoClose: 3000, theme: 'colored' });
+      return;
+    }
+
+    if (!formData.sellingPrice || parseFloat(formData.sellingPrice) <= 0) {
+      toast.error('❌ Selling price must be greater than 0', { autoClose: 3000, theme: 'colored' });
+      return;
+    }
+
+    if (!formData.actualCost || parseFloat(formData.actualCost) < 0) {
+      toast.error('❌ Actual cost must be 0 or greater', { autoClose: 3000, theme: 'colored' });
+      return;
+    }
+
+    if (parseFloat(formData.actualCost) >= parseFloat(formData.sellingPrice)) {
+      toast.error('❌ Selling price must be greater than actual cost', { autoClose: 3000, theme: 'colored' });
+      return;
+    }
+
     try {
-      const formDataToSend = new FormData();
+      let imageUrl = null;
 
-      formDataToSend.append('Name', formData.name);
-      formDataToSend.append('Category', formData.category);
-      formDataToSend.append('Price', formData.price);
-      formDataToSend.append('Small', formData.small);
-      formDataToSend.append('Medium', formData.medium);
-      formDataToSend.append('Large', formData.large);
-
+      // Upload image to Supabase Storage if one exists
       if (formData.image) {
-        formDataToSend.append('Image', formData.image);
+        const fileExt = formData.image.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('uploads')
+          .upload(`products/${fileName}`, formData.image);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('uploads')
+          .getPublicUrl(`products/${fileName}`);
+          
+        imageUrl = urlData.publicUrl;
       }
 
-      const response = await fetch('http://localhost:5231/api/product', {
-        method: 'POST',
-        body: formDataToSend,
-      });
+      // Insert product into Supabase (only fields that exist in schema)
+      const { data: productData, error: productError } = await supabase
+        .from('products')
+        .insert({
+          name: formData.name,
+          variant_name: formData.variantName,
+          category: formData.category,
+          price: parseFloat(formData.sellingPrice),
+          actual_cost: parseFloat(formData.actualCost),
+          image_path: imageUrl
+        })
+        .select();
 
-      if (!response.ok) {
-        throw new Error('Failed to add product');
+      if (productError) {
+        throw new Error(productError.message);
+      }
+
+      if (!productData || productData.length === 0) {
+        throw new Error('Failed to create product');
+      }
+
+      const productId = productData[0].id;
+      const initialStock = parseInt(formData.totalStock, 10);
+
+      // Create size entry for stock tracking
+      if (initialStock > 0) {
+        const { error: sizeError } = await supabase
+          .from('sizes')
+          .insert({
+            product_id: productId,
+            name: 'default',
+            quantity: initialStock,
+            total_quantity: initialStock,
+            remaining_quantity: initialStock,
+            facebook_quantity: 0,
+            instagram_quantity: 0
+          });
+
+        if (sizeError) {
+          console.error('Warning: Could not create size entry:', sizeError);
+        }
+
+        // Create initial stock activity log
+        const { error: stockTxError } = await supabase
+          .from('stock_transactions')
+          .insert({
+            product_id: productId,
+            product_name: formData.name,
+            quantity_added: initialStock,
+            note: 'Initial stock upon creation',
+            username: currentUser
+          });
+
+        if (stockTxError) {
+          console.error('Warning: Could not log initial stock transaction:', stockTxError);
+        }
       }
 
       await fetchProducts();
-
       setFormData({
         name: '',
+        variantName: '',
         category: '',
-        price: '',
+        totalStock: 0,
+        sellingPrice: '',
+        actualCost: '',
         image: null,
-        small: 0,
-        medium: 0,
-        large: 0,
       });
-
       onClose();
 
       toast.success('🎉 Product added successfully!', {
         position: 'top-right',
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
         theme: 'colored',
-        style: {
-          backgroundColor: '#4CAF50',
-          color: 'white',
-        },
+        style: { backgroundColor: '#4CAF50' },
       });
     } catch (error) {
       console.error('Error submitting form:', error);
       toast.error(`❌ ${error.message}`, {
         position: 'top-right',
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
         theme: 'colored',
-        style: {
-          backgroundColor: '#f44336',
-          color: 'white',
-        },
+        style: { backgroundColor: '#f44336' },
       });
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="max-w-[500px] w-full rounded-xl relative bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] shadow-lg">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
+      <div 
+        className="max-w-[600px] w-full rounded-xl relative bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] shadow-lg max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           onClick={onClose}
-          className="close-button absolute top-2 right-2 text-[#841c4f] text-2xl font-bold z-10"
+          className="close-button absolute top-4 right-4 text-[#841c4f] text-3xl font-bold z-10 hover:text-red-600"
         >
           ×
         </button>
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <h2 className="text-2xl font-bold text-[#841c4f] mb-6">Add New Product</h2>
+
+          {/* Product Name */}
           <div>
-            <label className="block text-[#841c4f] mb-2">Product Name:</label>
+            <label className="block text-[#841c4f] font-semibold mb-2">Product Name *</label>
             <input
               type="text"
+              name="name"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className="w-full p-2 rounded border border-gray-300"
+              onChange={handleInputChange}
+              className="w-full p-3 rounded border-2 border-[#d2679f]/30 focus:border-[#841c4f] focus:outline-none bg-white/90"
+              placeholder="e.g., Dress, Shirt, Pants"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-[#841c4f] mb-2">Category:</label>
-            <select
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              className="w-full p-2 rounded border border-gray-300"
-              required
-            >
-              <option value="">Select a category</option>
-              {PRODUCT_CATEGORIES.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
+          {/* Two Column Row: Variant & Category */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[#841c4f] font-semibold mb-2">Variant (Optional)</label>
+              <input
+                type="text"
+                name="variantName"
+                value={formData.variantName}
+                onChange={handleInputChange}
+                className="w-full p-3 rounded border-2 border-[#d2679f]/30 focus:border-[#841c4f] focus:outline-none bg-white/90"
+                placeholder="e.g., Red, Blue, Small"
+              />
+              <p className="text-xs text-gray-600 mt-1">Format: Color/Size</p>
+            </div>
+
+            <div>
+              <label className="block text-[#841c4f] font-semibold mb-2">Category *</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="w-full p-3 rounded border-2 border-[#d2679f]/30 focus:border-[#841c4f] focus:outline-none bg-white/90"
+                required
+              >
+                <option value="">Select a category</option>
+                {PRODUCT_CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
+          {/* Two Column Row: Stock, Price */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[#841c4f] font-semibold mb-2">Total Stock *</label>
+              <input
+                type="number"
+                name="totalStock"
+                value={formData.totalStock}
+                onChange={handleInputChange}
+                className="w-full p-3 rounded border-2 border-[#d2679f]/30 focus:border-[#841c4f] focus:outline-none bg-white/90"
+                min="1"
+                placeholder="0"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-[#841c4f] font-semibold mb-2">Selling Price (₱) *</label>
+              <input
+                type="number"
+                name="sellingPrice"
+                value={formData.sellingPrice}
+                onChange={handleInputChange}
+                className="w-full p-3 rounded border-2 border-[#d2679f]/30 focus:border-[#841c4f] focus:outline-none bg-white/90"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+              <p className="text-xs text-gray-600 mt-1">Price shown to customers</p>
+            </div>
+          </div>
+
+          {/* Actual Cost */}
           <div>
-            <label className="block text-[#841c4f] mb-2">Product Price:</label>
+            <label className="block text-[#841c4f] font-semibold mb-2">Actual Cost (₱) *</label>
             <input
               type="number"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
-              }
-              className="w-full p-2 rounded border border-gray-300"
+              name="actualCost"
+              value={formData.actualCost}
+              onChange={handleInputChange}
+              className="w-full p-3 rounded border-2 border-[#d2679f]/30 focus:border-[#841c4f] focus:outline-none bg-white/90"
               min="0"
               step="0.01"
+              placeholder="0.00"
               required
             />
+            <p className="text-xs text-gray-600 mt-1">Actual cost to owner (Profit = Selling Price - Actual Cost)</p>
           </div>
 
+          {/* Image Upload */}
           <div>
-            <label className="block text-[#841c4f] mb-2">Product Image:</label>
+            <label className="block text-[#841c4f] font-semibold mb-2">Product Image</label>
             <div className="flex items-center gap-3">
               <label
                 htmlFor="product-image-upload"
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 bg-white/80 border border-gray-300 rounded-lg shadow hover:bg-pink-100 transition"
+                className="flex items-center gap-2 cursor-pointer px-4 py-3 bg-white/90 border-2 border-[#d2679f]/30 rounded-lg hover:bg-[#ffe2f0] transition"
               >
-                <img src="/icons/addimage.png" alt="Add" className="w-6 h-6" />
-                <span className="text-[#841c4f] font-semibold">Add Image</span>
+                <img src="/icons/addimage.png" alt="Add" className="w-5 h-5" />
+                <span className="text-[#841c4f] font-semibold text-sm">Choose Image</span>
                 <input
                   id="product-image-upload"
                   type="file"
-                  onChange={(e) =>
-                    setFormData({ ...formData, image: e.target.files[0] })
-                  }
+                  onChange={handleImageChange}
                   className="hidden"
                   accept="image/*"
                 />
               </label>
               {formData.image && (
-                <span className="text-sm text-gray-700 truncate max-w-[150px]">
-                  {formData.image.name}
+                <span className="text-sm text-gray-700 font-semibold truncate max-w-[200px]">
+                  ✓ {formData.image.name}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex justify-between gap-4">
-              <div>
-                <label className="block text-sm text-center mb-1">Small</label>
-                <input
-                  type="number"
-                  value={formData.small}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      small: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-2 rounded border border-gray-300"
-                  min="0"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-center mb-1">
-                  Medium
-                </label>
-                <input
-                  type="number"
-                  value={formData.medium}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      medium: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-2 rounded border border-gray-300"
-                  min="0"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-center mb-1">Large</label>
-                <input
-                  type="number"
-                  value={formData.large}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      large: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full p-2 rounded border border-gray-300"
-                  min="0"
-                  required
-                />
-              </div>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-4 rounded-lg transition duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 bg-[#ffea99] hover:bg-[#f0dc8e] text-[#841c4f] font-bold py-3 px-4 rounded-lg transition duration-200"
+            >
+              ADD PRODUCT
+            </button>
           </div>
-
-          <button
-            type="submit"
-            className="w-full bg-yellow-200 hover:bg-yellow-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200"
-          >
-            ADD PRODUCT
-          </button>
         </form>
       </div>
     </div>

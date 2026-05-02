@@ -1,36 +1,29 @@
 import React from 'react';
 
-const stockIcons = ['pisbok.png', 'instagram.png'];
+export default function InventoryHeader({ inventoryPriceTotal, inventoryCostTotal, potentialSalesMargin, onNavigateToOrders }) {
+  const formatCurrency = (value) => `₱${Number(value || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 })}`;
 
-export default function InventoryHeader({ totalStocks, ordersByPlatform }) {
   return (
-    <div className="relative w-full h-[135px] bg-[#65366F] rounded-[25px] overflow-hidden mb-6 hover:shadow-lg transition-all duration-300">
-      <div className="absolute top-[10px] left-[45px] font-bold text-[#ffe2f0] text-[24px] hover:text-[#fff] transition-colors duration-200">
-        TOTAL INVENTORY
-      </div>
-      <div className="absolute top-[50px] left-[100px] font-bold text-[#ffe2f0] text-[50px] hover:scale-105 transition-transform duration-200">
-        {totalStocks}
-      </div>
-      <div className="absolute top-[10px] right-[10px] w-[70%] h-[115px] bg-[#EED2E0] rounded-[20px] flex items-center justify-center gap-4 md:gap-20 shadow-[inset_0_4px_4px_rgba(0,0,0,0.25)] hover:bg-[#d6b9d6] transition-all duration-300">
-        {/* Title for orders */}
-        <div className="absolute top-[8px] left-[20px] font-bold text-[#65366F] text-[18px]">
-          TOTAL ORDERS BY PLATFORM
-        </div>
-        
-        <div className="flex items-center justify-center gap-8 mt-4">
-          {stockIcons.map((icon, index) => (  
-            <div key={index} className="flex items-center group">
-              <img
-                className="w-[45px] h-[45px] md:w-[50px] md:h-[50px] object-contain group-hover:scale-110 transition-transform duration-300"
-                src={`/icons/${icon}`}
-                alt={`Platform ${index}`}
-              />
-              <div className="ml-2 md:ml-4 font-bold text-[#65366F] text-[32px] md:text-[40px] group-hover:text-[#552e5e] transition-colors duration-300">
-                {index === 0 ? ordersByPlatform.facebook : 
-                 ordersByPlatform.instagram}
-              </div>
-            </div>
-          ))}
+    <div
+      className="relative w-full min-h-[135px] rounded-[25px] overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+      style={{ background: 'linear-gradient(135deg, #D1C6F3 0%, #E9BCAC 100%)' }}
+      onClick={() => onNavigateToOrders && onNavigateToOrders('orders')}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_45%),linear-gradient(155deg,rgba(255,255,255,0.08),transparent_50%)]" />
+      <div className="relative h-full px-4 py-5 sm:px-5 sm:py-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 h-full">
+          <div className="rounded-[20px] bg-white border border-gray-400 p-5 flex flex-col justify-center gap-2 shadow-inner shadow-black/10 w-full">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-[#7d4f66] font-semibold">Inventory Price</div>
+            <div className="text-lg sm:text-xl font-bold text-[#4b2039]">{formatCurrency(inventoryPriceTotal)}</div>
+          </div>
+          <div className="rounded-[20px] bg-white border border-gray-400 p-5 flex flex-col justify-center gap-2 shadow-inner shadow-black/10 w-full">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-[#7d4f66] font-semibold">Inventory Cost</div>
+            <div className="text-lg sm:text-xl font-bold text-[#4b2039]">{formatCurrency(inventoryCostTotal)}</div>
+          </div>
+          <div className="rounded-[20px] bg-white border border-gray-400 p-5 flex flex-col justify-center gap-2 shadow-inner shadow-black/10 w-full">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-[#7d4f66] font-semibold">Potential Margin</div>
+            <div className="text-lg sm:text-xl font-bold text-[#4b2039]">{formatCurrency(potentialSalesMargin)}</div>
+          </div>
         </div>
       </div>
     </div>

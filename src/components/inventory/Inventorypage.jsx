@@ -1,46 +1,85 @@
 import { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { supabase } from '../../supabase';
 import CategoryTabs from './CategoryTabs';
 import SearchBar from './SearchBar';
 import ProductDisplay from './ProductDisplay';
 import FloatingButtons from './FloatingButtons';
-import OrderForm from './OrderForm';
-import ViewOrdersDialog from './ViewOrdersDialog';
+import Cart from './Cart';
 import AllOrdersDialog from './AllOrdersDialog';
 import AddProductDialog from './AddProductDialog';
 import EditProductDialog from './EditProductDialog';
+import CategoryManagerDialog from './CategoryManagerDialog';
+import { CartProvider, useCart } from '../CartContext';
 
-function Inventory() {
+function InventoryContent({ userRole }) {
+  const { clearCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showOrderForm, setShowOrderForm] = useState(false);
-  const [showOrdersDialog, setShowOrdersDialog] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const [showAllOrdersDialog, setShowAllOrdersDialog] = useState(false);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
   const [showAddProductDialog, setShowAddProductDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [showEditMode, setShowEditMode] = useState(false);
   const [selectedProductForEdit, setSelectedProductForEdit] = useState(null);
+  const [allOrdersDialogTab, setAllOrdersDialogTab] = useState('active');
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // Listen for navigation events from dashboard
+  useEffect(() => {
+    const handleNavigate = (event) => {
+      const section = event.detail;
+      if (section === 'orders') {
+        setAllOrdersDialogTab('active');
+        setShowAllOrdersDialog(true);
+      } else if (section === 'customers') {
+        setAllOrdersDialogTab('customers');
+        setShowAllOrdersDialog(true);
+      }
+    };
+
+    window.addEventListener('navigateToSection', handleNavigate);
+    return () => window.removeEventListener('navigateToSection', handleNavigate);
+  }, []);
+
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5231/api/product', {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+      const { data, error } = await supabase
+        .from('products')
+        .select(`
+          *,
+          sizes!product_id(
+            id,
+            quantity,
+            total_quantity,
+            remaining_quantity,
+            facebook_quantity,
+            instagram_quantity
+          )
+        `)
+        .order('created_at', { ascending: false });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
+      if (error) {
+        throw error;
       }
 
-      const data = await response.json();
-      setProducts(data);
+      // Map products to include stock info from sizes table
+      const productsWithStock = (data || []).map(product => ({
+        ...product,
+        // Use first size entry's quantities, or defaults if no sizes exist
+        remainingStock: product.sizes?.[0]?.remaining_quantity || 0,
+        totalStock: product.sizes?.[0]?.total_quantity || 0,
+        quantity: product.sizes?.[0]?.quantity || 0,
+        facebookQuantity: product.sizes?.[0]?.facebook_quantity || 0,
+        instagramQuantity: product.sizes?.[0]?.instagram_quantity || 0
+      }));
+
+      setProducts(productsWithStock);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -48,20 +87,10 @@ function Inventory() {
     }
   };
 
-  const handleOrder = (product) => {
-    setSelectedProduct(product);
-    setShowOrderForm(true);
-  };
-
-  const handleOrderComplete = async () => {
+  const handleCartComplete = async () => {
     await fetchProducts();
-    setShowOrderForm(false);
-    setSelectedProduct(null);
-  };
-
-  const handleViewOrders = (product) => {
-    setSelectedProduct(product);
-    setShowOrdersDialog(true);
+    setShowCart(false);
+    clearCart();
   };
 
   const getFilteredProducts = () => {
@@ -102,15 +131,13 @@ function Inventory() {
       <CategoryTabs
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
+        products={products}
       />
       <div className="p-5">
         <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="flex justify-between px-[45px] border-b border-transparent mb-5 font-medium">
-          <div className="flex items-center gap-[5px] font-['OFL_Sorts_Mill_Goudy_TT'] text-xl text-gray-900 px-[40px] select-none">
+          <div className="flex items-center gap-[5px] font-['Satoshi'] text-xl text-gray-900 px-[40px] select-none">
             PRODUCTS
-          </div>
-          <div className="flex items-center font-['OFL_Sorts_Mill_Goudy_TT'] text-xl text-gray-900 px-[27px] mr-[500px] select-none">
-            STOCKS
           </div>
         </div>
         {loading ? (
@@ -122,8 +149,7 @@ function Inventory() {
             products={getFilteredProducts()}
             showEditMode={showEditMode}
             onProductSelect={handleProductSelect}
-            onOrder={handleOrder}
-            onViewOrders={handleViewOrders}
+            onStockAdded={fetchProducts}
           />
         )}
       </div>
@@ -131,24 +157,21 @@ function Inventory() {
         onEditToggle={toggleEditMode}
         onAddProduct={handleShowAddProductDialog}
         onViewAllOrders={handleShowAllOrdersDialog}
+        onManageCategories={() => setShowCategoryManager(true)}
+        onCartOpen={() => setShowCart(true)}
         showEditMode={showEditMode}
+        userRole={userRole}
       />
-      {showOrderForm && (
-        <OrderForm
-          product={selectedProduct}
-          onClose={() => setShowOrderForm(false)}
-          onSubmit={handleOrderComplete}
-        />
-      )}
-      {showOrdersDialog && (
-        <ViewOrdersDialog
-          product={selectedProduct}
-          onClose={() => setShowOrdersDialog(false)}
+      {showCart && (
+        <Cart
+          onClose={() => setShowCart(false)}
+          onSubmit={handleCartComplete}
         />
       )}
       {showAllOrdersDialog && (
         <AllOrdersDialog
           onClose={() => setShowAllOrdersDialog(false)}
+          initialTab={allOrdersDialogTab}
         />
       )}
       {showAddProductDialog && (
@@ -160,12 +183,28 @@ function Inventory() {
       {selectedProductForEdit && (
         <EditProductDialog
           product={selectedProductForEdit}
+          userRole={userRole}
           onClose={() => setSelectedProductForEdit(null)}
+          fetchProducts={fetchProducts}
+        />
+      )}
+      {showCategoryManager && (
+        <CategoryManagerDialog
+          onClose={() => setShowCategoryManager(false)}
+          products={products}
           fetchProducts={fetchProducts}
         />
       )}
       <ToastContainer />
     </div>
+  );
+}
+
+function Inventory({ userRole }) {
+  return (
+    <CartProvider>
+      <InventoryContent userRole={userRole} />
+    </CartProvider>
   );
 }
 
