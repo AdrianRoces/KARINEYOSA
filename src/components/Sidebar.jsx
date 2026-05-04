@@ -202,10 +202,10 @@ export default function Sidebar({ children, onLogout, userRole }) {
       {/* RESPONSIVE HEADER */}
       <header className="w-full bg-[#f5eef3] shadow-[0_2px_12px_rgba(140,60,180,0.08)] z-50 fixed top-0 left-0 right-0 font-satoshi">
         {/* Desktop Header (hidden on mobile) */}
-        <div className="hidden lg:flex h-[65px] items-center justify-between px-4 lg:px-10 py-2 lg:py-0">
+        <div className="hidden lg:flex h-[56px] items-center justify-between px-30 lg:px-8 py-2 lg:py-0">
           {/* Left: Dashboard Title */}
           <div className="flex items-center flex-1">
-            <h1 className="text-[32px] lg:text-[45px] font-bold text-[#8E1751] truncate">
+            <h1 className="text-[28px] lg:text-[40px] font-bold text-[#8E1751] truncate">
               {activePanel.toUpperCase()}
             </h1>
           </div>
@@ -256,7 +256,7 @@ export default function Sidebar({ children, onLogout, userRole }) {
         </div>
 
         {/* Mobile/Tablet Header */}
-        <div className="lg:hidden h-[60px] flex items-center justify-between px-4 py-2">
+        <div className="lg:hidden h-[50px] flex items-center justify-between px-3 py-1">
           {/* Hamburger Menu */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -269,7 +269,7 @@ export default function Sidebar({ children, onLogout, userRole }) {
           </button>
 
           {/* Mobile Title */}
-          <h1 className="text-[24px] font-bold text-[#8E1751] flex-1 text-center truncate">
+          <h1 className="text-[20px] font-bold text-[#8E1751] flex-1 text-center truncate">
             {getPanelLabel(activePanel)}
           </h1>
 

@@ -14,12 +14,23 @@ const TooltipButton = ({ tooltipText, children, className, ...props }) => (
   </div>
 );
 
-function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManageCategories, onCartOpen, showEditMode, userRole = 'user' }) {
-  const normalizedRole = String(userRole || '').toLowerCase();
+function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManageCategories, onCartOpen, showEditMode, userRole = 'employee' }) {
+  // STRICT ROLE CHECKING: Prioritize Local Storage to prevent default overrides
+  const fallbackUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const roleFromStorage = String(fallbackUser.role || fallbackUser.Role || '').trim().toLowerCase();
+  const passedRole = String(userRole || '').trim().toLowerCase();
+  
+  // Convert 'user' to 'employee' universally
+  let normalizedRole = roleFromStorage || passedRole || 'employee';
+  if (normalizedRole === 'user') normalizedRole = 'employee';
+
   const { cartItems } = useCart();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const canEditProducts = normalizedRole === 'admin' || normalizedRole === 'employee';
-  const isAdmin = normalizedRole === 'admin';
+  
+  // Logic: Employees AND admins can edit products (employees see stock manager only, admins see full edit)
+  const canEditProducts = normalizedRole === 'admin' || normalizedRole === 'employee' || normalizedRole === 'owner';
+  const isAdmin = normalizedRole === 'admin' || normalizedRole === 'owner';
+  
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -47,19 +58,21 @@ function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManage
               </div>
             )}
           </TooltipButton>
+          
           {canEditProducts && (
             <TooltipButton
               onClick={onEditToggle}
-              className={`w-[56px] h-[56px] rounded-full transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer shadow-lg ${
-                showEditMode ? 'ring-4 ring-yellow-400' : 'bg-white'
+              className={`w-[56px] h-[56px] rounded-full transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer shadow-lg flex items-center justify-center ${
+                showEditMode ? 'ring-4 ring-yellow-400 bg-white' : 'bg-white'
               }`}
               aria-label="Edit Products"
               title="Toggle edit mode"
-              tooltipText={normalizedRole === 'employee' ? 'Manage stock' : 'Toggle edit mode'}
+              tooltipText={normalizedRole === 'employee' ? 'Manage stock' : 'Edit products'}
             >
-              <img src="icons/Group 6.png" alt="EDIT" className="w-[28px] h-[28px] mx-auto" />
+              <img src="icons/Group 6.png" alt="EDIT" className="w-[28px] h-[28px]" />
             </TooltipButton>
           )}
+
           {isAdmin && (
             <TooltipButton
               onClick={onAddProduct}

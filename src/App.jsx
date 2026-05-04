@@ -134,6 +134,9 @@ export default function App() {
     );
   }
 
+  // Check if user is in recovery mode to show ResetPassword as full-screen overlay
+  const isInRecoveryMode = localStorage.getItem('recoveryMode') === 'true';
+
   return (
     <Router>
       <ToastContainer
@@ -147,13 +150,11 @@ export default function App() {
         draggable
         pauseOnHover
       />
-      {isLoggedIn ? (
+      {isLoggedIn && !isInRecoveryMode ? (
         <div className="h-screen w-screen bg-[#f5eef3] dark:bg-dark-background overflow-hidden">
           <Sidebar onLogout={handleLogout} userRole={userRole}>
             <main className="w-full h-full">
               <Routes>
-                {/* Reset Password must be accessible when logged in, because the recovery link automatically logs the user in! */}
-                <Route path="/reset-password" element={<ResetPassword />} />
                 
                 <Route 
                   path="/dashboard" 
@@ -217,6 +218,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       )}
+      {/* Show ResetPassword as full-screen overlay when in recovery mode */}
+      {isLoggedIn && isInRecoveryMode && <ResetPassword />}
     </Router>
   );
 }

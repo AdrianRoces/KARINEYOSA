@@ -53,8 +53,8 @@ function CategoryTabs({ activeCategory, onCategoryChange, products = [] }) {
   }, [products]);
 
   return (
-    <div className="top-0 left-[80px] w-full h-[65px] shadow-md z-10" style={{ background: 'linear-gradient(135deg, #D1C6F3 0%, #E9BCAC 100%)' }}>
-      <div className="flex gap-5 h-full items-center overflow-x-auto overflow-y-hidden px-4 scrollbar-hide">
+    <div className="top-0 left-0 lg:left-[80px] w-full h-[52px] sm:h-[56px] shadow-md z-10" style={{ background: 'linear-gradient(135deg, #D1C6F3 0%, #E9BCAC 100%)' }}>
+      <div className="flex gap-3 sm:gap-4 h-full items-center overflow-x-auto overflow-y-hidden px-2 sm:px-4 scrollbar-hide">
         <CategoryTab
           name="ALL"
           category="all"

@@ -10,20 +10,50 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [recoveryReady, setRecoveryReady] = useState(false);
   
   // Toggle states for password visibility
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
-    // Check if the user is arriving from a password reset email
-    const hash = window.location.hash;
-    if (hash && hash.includes('type=recovery')) {
-      // SECURE THE SYSTEM: Flag that the user is in recovery mode.
-      // App.jsx will use this to trap the user on this screen and block access to the app
+    const initializeRecoverySession = async () => {
+      const hash = window.location.hash || window.location.search;
+      const isRecoveryUrl = hash && hash.includes('type=recovery');
+
+      if (!isRecoveryUrl) {
+        setError('Invalid reset link. Please use the link from your email.');
+        setRecoveryReady(false);
+        return;
+      }
+
+      try {
+        // Force Supabase to read the recovery token from the URL and create a temporary session.
+        await supabase.auth.getSessionFromUrl?.();
+      } catch (err) {
+        console.warn('getSessionFromUrl warning:', err?.message ?? err);
+      }
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Error fetching recovery session:', sessionError);
+        setError('Unable to verify reset session. Please try the link again.');
+        setRecoveryReady(false);
+        return;
+      }
+
+      if (!sessionData?.session?.user) {
+        setError('Auth session missing! Please use the password reset link from your email again.');
+        setRecoveryReady(false);
+        return;
+      }
+
       localStorage.setItem('recoveryMode', 'true');
       toast.info('Secure session established. Please set your new password.', { autoClose: 5000 });
-    }
+      setRecoveryReady(true);
+    };
+
+    initializeRecoverySession();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -44,32 +74,45 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      // Supabase's built-in function updates the password of the active temporary session
-      const { error } = await supabase.auth.updateUser({
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData?.session?.user) {
+        setError('Auth session missing! Please use the reset link again.');
+        toast.error('Auth session missing!');
+        setLoading(false);
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword
       });
 
-      if (error) {
-        setError(error.message);
-        toast.error(error.message);
+      if (updateError) {
+        setError(updateError.message);
+        toast.error(updateError.message);
+        setLoading(false);
       } else {
         setMessage('Password updated successfully!');
         toast.success('Password updated successfully! Please log in.');
         
         // UNLOCK THE SYSTEM & FORCE RE-LOGIN
         localStorage.removeItem('recoveryMode');
-        await supabase.auth.signOut();
+        localStorage.removeItem('user');
+        localStorage.removeItem('isLoggedIn');
         
-        setTimeout(() => {
+        setTimeout(async () => {
+          try {
+            await supabase.auth.signOut();
+          } catch (signOutErr) {
+            console.error('Sign out error (non-critical):', signOutErr);
+          }
           navigate('/login');
-          window.location.reload(); // Hard reload to clear any residual auth state
-        }, 1500);
+          window.location.reload();
+        }, 1000);
       }
     } catch (err) {
       setError('Unable to update password.');
       toast.error('Unable to update password.');
       console.error('Reset password error:', err);
-    } finally {
       setLoading(false);
     }
   };
@@ -159,7 +202,7 @@ const ResetPassword = () => {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={!recoveryReady || loading}
             className="w-full rounded-2xl bg-gradient-to-br from-[#D1C6F3] to-[#E9BCAC] px-5 py-3 text-[#280A4F] font-bold shadow-[0_12px_28px_rgba(209,198,243,0.28)] transition hover:shadow-[0_16px_32px_rgba(209,198,243,0.32)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? 'Resetting...' : 'Update Password'}

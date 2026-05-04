@@ -71,6 +71,7 @@ function InventoryContent({ userRole }) {
       // Map products to include stock info from sizes table
       const productsWithStock = (data || []).map(product => ({
         ...product,
+        variantName: product.variantName || product.variant_name || '',
         // Use first size entry's quantities, or defaults if no sizes exist
         remainingStock: product.sizes?.[0]?.remaining_quantity || 0,
         totalStock: product.sizes?.[0]?.total_quantity || 0,
@@ -133,10 +134,10 @@ function InventoryContent({ userRole }) {
         onCategoryChange={setActiveCategory}
         products={products}
       />
-      <div className="p-5">
+      <div className="p-3 sm:p-5 pt-[50px] sm:pt-[56px]">
         <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        <div className="flex justify-between px-[45px] border-b border-transparent mb-5 font-medium">
-          <div className="flex items-center gap-[5px] font-['Satoshi'] text-xl text-gray-900 px-[40px] select-none">
+        <div className="flex flex-col sm:flex-row justify-between border-b border-transparent mb-5 font-medium px-2 sm:px-4">
+          <div className="flex items-center gap-2 font-['Satoshi'] text-lg sm:text-xl text-gray-900 select-none">
             PRODUCTS
           </div>
         </div>
@@ -160,7 +161,7 @@ function InventoryContent({ userRole }) {
         onManageCategories={() => setShowCategoryManager(true)}
         onCartOpen={() => setShowCart(true)}
         showEditMode={showEditMode}
-        userRole={userRole}
+        userRole={userRole || JSON.parse(localStorage.getItem('user') || '{}').role}
       />
       {showCart && (
         <Cart
@@ -183,7 +184,7 @@ function InventoryContent({ userRole }) {
       {selectedProductForEdit && (
         <EditProductDialog
           product={selectedProductForEdit}
-          userRole={userRole}
+          userRole={userRole || JSON.parse(localStorage.getItem('user') || '{}').role}
           onClose={() => setSelectedProductForEdit(null)}
           fetchProducts={fetchProducts}
         />

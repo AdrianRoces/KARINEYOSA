@@ -4,7 +4,7 @@ import { PRODUCT_CATEGORIES } from './constants';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { supabase } from '../../supabase';
 
-function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' }) {
+function EditProductDialog({ product, onClose, fetchProducts, userRole }) {
   const [formData, setFormData] = useState({
     name: product.name,
     variantName: product.variantName || product.variant_name || '',
@@ -17,15 +17,22 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
   const [stockQuantity, setStockQuantity] = useState(1);
   const [stockNote, setStockNote] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
-  const isEmployee = String(userRole || '').toLowerCase() === 'employee';
+
+  // STRICT ROLE CHECKING: Prioritize Local Storage to prevent default overrides
+  const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
+  const roleFromStorage = String(userInfo.role || userInfo.Role || '').trim().toLowerCase();
+  const passedRole = String(userRole || '').trim().toLowerCase();
+  
+  // Convert 'user' to 'employee' universally
+  let activeRole = roleFromStorage || passedRole || 'employee';
+  if (activeRole === 'user') activeRole = 'employee';
+  
+  const isEmployee = activeRole === 'employee';
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
     const username = userInfo.Username || userInfo.username || userInfo.name || 'Unknown User';
     setCurrentUser(username);
-  }, []);
 
-  useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape') {
         onClose();
@@ -42,7 +49,12 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEmployee) return;
+    
+    // Security fallback: Employees cannot submit product changes
+    if (isEmployee) {
+      onClose();
+      return;
+    }
 
     try {
       let imageUrl = product.imagePath || product.image_path || null;
@@ -75,7 +87,6 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
         position: 'top-right',
         autoClose: 3000,
         theme: 'colored',
-        style: { backgroundColor: '#4CAF50' },
       });
     } catch (error) {
       console.error('Error updating product:', error);
@@ -83,15 +94,16 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
         position: 'top-right',
         autoClose: 5000,
         theme: 'colored',
-        style: { backgroundColor: '#f44336' },
       });
     }
   };
 
   const handleDelete = async () => {
+    // Security fallback
+    if (isEmployee) return;
+
     try {
       const { error } = await supabase.from('products').delete().eq('id', product.id);
-
       if (error) throw error;
 
       await fetchProducts();
@@ -101,7 +113,6 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
         position: 'top-right',
         autoClose: 3000,
         theme: 'colored',
-        style: { backgroundColor: '#4CAF50' },
       });
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -109,7 +120,6 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
         position: 'top-right',
         autoClose: 5000,
         theme: 'colored',
-        style: { backgroundColor: '#f44336' },
       });
     }
   };
@@ -180,7 +190,7 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
       setStockNote('');
       toast.success(
         action === 'add' ? '✅ Stock successfully added!' : '✅ Stock successfully deducted!',
-        { position: 'top-right', autoClose: 3000, theme: 'colored', style: { backgroundColor: '#4CAF50' } }
+        { position: 'top-right', autoClose: 3000, theme: 'colored' }
       );
     } catch (error) {
       console.error('Error updating stock:', error);
@@ -194,7 +204,7 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
       onClick={onClose}
     >
       <div 
-        className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-8 w-[600px] shadow-lg max-h-[90vh] overflow-y-auto"
+        className={`bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-8 shadow-lg max-h-[90vh] overflow-y-auto ${isEmployee ? 'w-[500px]' : 'w-[600px]'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
@@ -202,8 +212,10 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
             <h2 className="text-2xl font-bold text-[#841c4f]">
               {isEmployee ? 'Manage Stock' : 'Edit Product'}
             </h2>
-            {isEmployee && (
-              <p className="text-sm text-gray-700 mt-1">Adjust product stock quantities</p>
+            {isEmployee ? (
+              <p className="text-sm text-gray-700 mt-1">Adjust inventory for <span className="font-bold text-[#841c4f]">{product.name}</span></p>
+            ) : (
+              <p className="text-sm text-gray-700 mt-1">Update details for <span className="font-bold text-[#841c4f]">{product.name}</span></p>
             )}
           </div>
           <button
@@ -215,14 +227,18 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* STOCK MANAGEMENT SECTION (Visible to everyone) */}
           <div className="rounded-[28px] bg-[#fff5e6] p-4 border border-[#841c4f]/15 shadow-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <div className="text-lg font-bold text-[#841c4f]">Manage Stock</div>
-                <div className="text-sm text-gray-600 mt-1">Adjust quantity with a note to preserve transaction history.</div>
+                <div className="text-lg font-bold text-[#841c4f]">Adjust Inventory</div>
+                <div className="text-sm text-gray-600 mt-1">Leave a note to preserve transaction history.</div>
               </div>
               {currentUser && (
-                <div className="text-sm text-[#841c4f] font-semibold">By: {currentUser}</div>
+                <div className="text-sm text-[#841c4f] font-semibold bg-white/50 px-3 py-1 rounded-full border border-[#841c4f]/10">
+                  By: {currentUser}
+                </div>
               )}
             </div>
 
@@ -269,6 +285,7 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
             </div>
           </div>
 
+          {/* PRODUCT INFORMATION SECTION (HIDDEN for Employees) */}
           {!isEmployee && (
             <>
               <h3 className="text-lg font-bold text-[#841c4f] mt-8">Product Information</h3>
@@ -375,24 +392,25 @@ function EditProductDialog({ product, onClose, fetchProducts, userRole = 'User' 
             </>
           )}
 
+          {/* DYNAMIC FOOTER BUTTONS */}
           {isEmployee ? (
-            <div className="flex justify-end gap-2 pt-6">
+            <div className="flex justify-end pt-4 border-t border-[#841c4f]/20">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded-lg transition"
+                className="px-8 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold rounded-lg transition"
               >
-                Close
+                Done
               </button>
             </div>
           ) : (
-            <div className="flex gap-3 pt-6">
+            <div className="flex gap-3 pt-6 border-t border-[#841c4f]/20">
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(true)}
                 className="px-4 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition"
               >
-                Delete
+                Delete Product
               </button>
               <div className="flex gap-2 ml-auto">
                 <button

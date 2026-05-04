@@ -12,7 +12,8 @@ const AdminUserManagement = () => {
   const [editUserId, setEditUserId] = useState(null);
   const [editUsername, setEditUsername] = useState('');
   const [editIsActive, setEditIsActive] = useState(true);
-  const [editRole, setEditRole] = useState('user');
+  const [editRole, setEditRole] = useState('employee'); // Default mapping from user -> employee
+  const [editPassword, setEditPassword] = useState(''); 
 
   useEffect(() => {
     fetchUsers();
@@ -53,11 +54,10 @@ const AdminUserManagement = () => {
           approved_at: new Date().toISOString()
         })
         .eq('id', userId)
-        .select(); // CRITICAL: This checks if the RLS policy allowed the update
+        .select();
 
       if (error) throw error;
 
-      // If length is 0, it means the database blocked the update due to RLS policies
       if (!data || data.length === 0) {
         toast.error('Database update blocked! You MUST run the SQL RLS policy to allow admins to update profiles.');
         return;
@@ -93,7 +93,6 @@ const AdminUserManagement = () => {
         <h1 className="text-3xl font-bold text-[#280A4F] mb-2 font-['Satoshi']">User Management</h1>
         <p className="text-[#841c4f] mb-6 font-medium">Manage user accounts and approvals</p>
 
-        {/* Tab Navigation */}
         <div className="flex gap-4 mb-6 border-b-2 border-[#D9B5CC]">
           <button
             onClick={() => setSelectedTab('pending')}
@@ -159,7 +158,7 @@ const AdminUserManagement = () => {
                           ? 'bg-[#65366F] text-white'
                           : 'bg-[#D9B5CC]/60 text-[#280A4F]'
                       }`}>
-                        {user.role}
+                        {String(user.role || '').toLowerCase() === 'user' ? 'Employee' : user.role}
                       </span>
                     </div>
                   </div>
@@ -203,7 +202,9 @@ const AdminUserManagement = () => {
                         setEditUserId(user.id);
                         setEditUsername(user.username);
                         setEditIsActive(user.is_active);
-                        setEditRole(user.role || 'user');
+                        // Map 'user' to 'employee' when editing
+                        setEditRole(String(user.role || '').toLowerCase() === 'user' ? 'employee' : (user.role || 'employee'));
+                        setEditPassword(''); 
                       }}
                       className="px-4 py-2 bg-[#65366F] hover:bg-[#841c4f] text-white rounded-lg font-medium transition shadow-md"
                     >
@@ -262,17 +263,17 @@ const AdminUserManagement = () => {
           <label className="block text-sm font-semibold text-[#841c4f] mb-2">Username</label>
           <input className="w-full border-2 border-[#D9B5CC]/60 p-3 rounded-lg mb-4 focus:outline-none focus:border-[#841c4f] focus:ring-2 focus:ring-[#FFE2F0] bg-white/90 text-[#280A4F]" value={editUsername} onChange={e => setEditUsername(e.target.value)} />
           
-          <label className="block text-sm font-semibold text-[#841c4f] mb-2">Password Update</label>
+          <label className="block text-sm font-semibold text-[#841c4f] mb-2">Override Password (Optional)</label>
           <input 
-            type="password" 
-            placeholder="Cannot change passwords here directly"
-            className="w-full border-2 border-[#D9B5CC]/60 p-3 rounded-lg mb-4 bg-[#f0f0f0] cursor-not-allowed opacity-60 text-sm text-[#841c4f]" 
-            disabled 
+            type="text" 
+            placeholder="Type new password to override (leave blank to keep current)"
+            value={editPassword}
+            onChange={e => setEditPassword(e.target.value)}
+            className="w-full border-2 border-[#D9B5CC]/60 p-2 rounded-lg mb-4 focus:outline-none focus:border-[#841c4f] focus:ring-2 focus:ring-[#FFE2F0] bg-white/80 text-sm" 
           />
           
           <label className="block text-sm font-semibold text-[#841c4f] mb-2">Role</label>
           <select className="w-full border-2 border-[#D9B5CC]/60 p-3 rounded-lg mb-4 focus:outline-none focus:border-[#841c4f] focus:ring-2 focus:ring-[#FFE2F0] bg-white/90 text-[#280A4F] font-medium" value={editRole} onChange={e => setEditRole(e.target.value)}>
-            <option value="user">User</option>
             <option value="employee">Employee</option>
             <option value="admin">Admin</option>
           </select>
@@ -298,9 +299,23 @@ const AdminUserManagement = () => {
                     toast.error('Database update blocked! Check your RLS policies.');
                     return;
                   }
+
+                  if (editPassword.trim().length > 0) {
+                    if (editPassword.trim().length < 6) {
+                      toast.error('Password must be at least 6 characters long.');
+                      return;
+                    }
+                    const { error: passError } = await supabase.rpc('admin_update_user_password', {
+                      p_user_id: editUserId,
+                      p_new_password: editPassword.trim()
+                    });
+                    if (passError) throw passError;
+                    toast.success('Password successfully overwritten.');
+                  }
                   
                   toast.success('User updated successfully');
                   setEditUserId(null);
+                  setEditPassword('');
                   fetchUsers();
                 } catch (err) {
                   toast.error('Failed to update user');
@@ -308,7 +323,7 @@ const AdminUserManagement = () => {
                 }
               }}
             >Save</button>
-            <button className="flex-1 px-4 py-2 bg-[#D9B5CC] hover:bg-[#c9a3bb] text-[#280A4F] rounded-lg font-semibold transition shadow-md" onClick={() => setEditUserId(null)}>Cancel</button>
+            <button className="flex-1 px-4 py-2 bg-[#D9B5CC] hover:bg-[#c9a3bb] text-[#280A4F] rounded-lg font-semibold transition shadow-md" onClick={() => { setEditUserId(null); setEditPassword(''); }}>Cancel</button>
           </div>
         </div>
       </div>

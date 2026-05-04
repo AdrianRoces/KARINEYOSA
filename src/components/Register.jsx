@@ -117,7 +117,7 @@ const Register = () => {
           .insert({
             id: data.user.id,
             username: formData.username,
-            role: isFirstAdmin ? 'admin' : 'user',
+            role: isFirstAdmin ? 'admin' : 'employee', // Universal default to 'employee'
             status: newStatus,
             is_active: true
           });
