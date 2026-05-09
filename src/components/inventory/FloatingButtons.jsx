@@ -46,12 +46,17 @@ function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManage
         <div className="flex flex-col items-end gap-3">
           <TooltipButton
             onClick={onCartOpen}
-            className="w-[56px] h-[56px] bg-gradient-to-br from-[#ffea99] to-[#ffe8cc] rounded-full flex items-center justify-center transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer shadow-lg font-bold text-2xl text-[#841c4f]"
+            className="w-[56px] h-[56px] bg-gradient-to-br from-[#ffea99] to-[#ffe8cc] rounded-full flex items-center justify-center transition-transform duration-300 ease-in-out hover:scale-110 cursor-pointer shadow-lg"
             aria-label="Shopping Cart"
             title="Open cart"
             tooltipText="Open cart"
           >
-            🛒
+            <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#841c4f]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 6h15l-1.5 9h-12z" />
+              <path d="M6 6l-1.5-4H2" />
+              <circle cx="9" cy="20" r="1.5" />
+              <circle cx="18" cy="20" r="1.5" />
+            </svg>
             {cartCount > 0 && (
               <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold">
                 {cartCount}
@@ -69,7 +74,10 @@ function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManage
               title="Toggle edit mode"
               tooltipText={normalizedRole === 'employee' ? 'Manage stock' : 'Edit products'}
             >
-              <img src="icons/Group 6.png" alt="EDIT" className="w-[28px] h-[28px]" />
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#841c4f]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20h16" />
+                <path d="M14.5 5.5 18.5 9.5 9 19H5v-4L14.5 5.5Z" />
+              </svg>
             </TooltipButton>
           )}
 
@@ -81,7 +89,11 @@ function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManage
               title="Add a new product"
               tooltipText="Add a new product"
             >
-              <img src="icons/addproduct.png" alt="ADD" className="w-[28px] h-[28px] object-cover" />
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-[#841c4f]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v8" />
+                <path d="M8 12h8" />
+              </svg>
             </TooltipButton>
           )}
           <TooltipButton
@@ -91,7 +103,11 @@ function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManage
             title="View all orders"
             tooltipText="View all orders"
           >
-            <span className="text-white font-bold text-2xl">📋</span>
+            <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 4H8a2 2 0 0 0-2 2v14h12V6a2 2 0 0 0-2-2Z" />
+              <path d="M8 4V2h8v2" />
+              <path d="M8 12h8" />
+            </svg>
           </TooltipButton>
           {isAdmin && onManageCategories && (
             <TooltipButton
@@ -101,20 +117,33 @@ function FloatingButtons({ onEditToggle, onAddProduct, onViewAllOrders, onManage
               title="Manage product categories"
               tooltipText="Manage product categories"
             >
-              <span className="text-white font-bold text-2xl">🏷️</span>
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 7v10l7 4 7-4V7L12 3 5 7Z" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
             </TooltipButton>
           )}
         </div>
       )}
       <TooltipButton
         onClick={toggleOpen}
-        className="w-[60px] h-[60px] rounded-full flex items-center justify-center text-gray-800 text-3xl transition-transform duration-300 ease-in-out hover:scale-110 shadow-xl border border-gray-400 font-bold"
+        className="w-[60px] h-[60px] rounded-full flex items-center justify-center text-gray-800 transition-transform duration-300 ease-in-out hover:scale-110 shadow-xl border border-gray-400"
         style={{ background: 'linear-gradient(135deg, #D1C6F3 0%, #E9BCAC 100%)' }}
         aria-label={open ? 'Close actions' : 'Open actions'}
         title={open ? 'Close action drawer' : 'Open action drawer'}
         tooltipText={open ? 'Close action drawer' : 'Open action drawer'}
       >
-        {open ? '×' : '+'}
+        {open ? (
+          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 6l12 12" />
+            <path d="M18 6 6 18" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
+        )}
       </TooltipButton>
     </div>
   );

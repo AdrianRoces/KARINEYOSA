@@ -15,14 +15,15 @@ export default function Sidebar({ children, onLogout, userRole }) {
   
   // Determine active panel from URL path
   const normalizedRole = String(userRole || '').toLowerCase();
-  const path = location.pathname.split('/')[1] || (normalizedRole === 'admin' ? 'dashboard' : 'inventory');
+  const effectiveRole = normalizedRole === 'employee' ? 'user' : normalizedRole;
+  const path = location.pathname.split('/')[1] || (effectiveRole === 'admin' ? 'dashboard' : 'inventory');
   const [activePanel, setActivePanel] = useState(path);
   
   // Update active panel when location changes or on initial load
   useEffect(() => {
-    const currentPath = location.pathname.split('/')[1] || (normalizedRole === 'admin' ? 'dashboard' : 'inventory');
+    const currentPath = location.pathname.split('/')[1] || (effectiveRole === 'admin' ? 'dashboard' : 'inventory');
     setActivePanel(currentPath);
-  }, [location.pathname, normalizedRole]);
+  }, [location.pathname, effectiveRole]);
 
   // Animation state for main content
   const [contentVisible, setContentVisible] = useState(false);
@@ -129,7 +130,7 @@ export default function Sidebar({ children, onLogout, userRole }) {
 
   const handleNavigation = (itemId) => {
     const item = items.find(i => i.id === itemId);
-    const normalizedRoleForCheck = String(userRole || '').toLowerCase();
+    const normalizedRoleForCheck = effectiveRole;
     const allowed = item?.roles?.includes(normalizedRoleForCheck) || isAdminOverrideActive();
     if (!allowed) {
       // Open admin unlock modal
@@ -202,7 +203,7 @@ export default function Sidebar({ children, onLogout, userRole }) {
       {/* RESPONSIVE HEADER */}
       <header className="w-full bg-[#f5eef3] shadow-[0_2px_12px_rgba(140,60,180,0.08)] z-50 fixed top-0 left-0 right-0 font-satoshi">
         {/* Desktop Header (hidden on mobile) */}
-        <div className="hidden lg:flex h-[56px] items-center justify-between px-30 lg:px-8 py-2 lg:py-0">
+        <div className="hidden lg:flex h-[65px] items-center justify-between px-30 lg:px-8 py-2 lg:py-0">
           {/* Left: Dashboard Title */}
           <div className="flex items-center flex-1">
             <h1 className="text-[28px] lg:text-[40px] font-bold text-[#8E1751] truncate">
@@ -256,7 +257,7 @@ export default function Sidebar({ children, onLogout, userRole }) {
         </div>
 
         {/* Mobile/Tablet Header */}
-        <div className="lg:hidden h-[50px] flex items-center justify-between px-3 py-1">
+        <div className="lg:hidden h-[60px] flex items-center justify-between px-3 py-1">
           {/* Hamburger Menu */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -387,7 +388,7 @@ export default function Sidebar({ children, onLogout, userRole }) {
             <div className={`flex flex-col ${collapsed && !isMobile ? 'pt-0' : 'pt-2'}`}>
               <nav className="space-y-0">
                 {items.map((item, index) => {
-                  const hasAccess = item.roles.includes(userRole) || isAdminOverrideActive();
+                  const hasAccess = item.roles.includes(effectiveRole) || isAdminOverrideActive();
 
                   if (!hasAccess) {
                     return null;

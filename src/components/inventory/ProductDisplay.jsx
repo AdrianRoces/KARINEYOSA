@@ -95,7 +95,7 @@ function ProductDisplay({
 
   return (
     <div className="mx-auto max-w-[1600px] px-3 sm:px-4 lg:px-4">
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 justify-center px-1 sm:px-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4 justify-center px-1 sm:px-2">
         {products.map((product) => {
           const cartQty = productQuantities[product.id] || 0;
           const displayStock = Math.max((product.remainingStock ?? 0) - cartQty, 0);

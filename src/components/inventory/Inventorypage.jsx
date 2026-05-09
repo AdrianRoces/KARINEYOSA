@@ -16,12 +16,12 @@ function InventoryContent({ userRole }) {
   const { clearCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCart, setShowCart] = useState(false);
-  const [showAllOrdersDialog, setShowAllOrdersDialog] = useState(false);
-  const [showCategoryManager, setShowCategoryManager] = useState(false);
-  const [showAddProductDialog, setShowAddProductDialog] = useState(false);
+  const [activeDialog, setActiveDialog] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const itemsPerPage = isMobileView ? 10 : 12;
   const [showEditMode, setShowEditMode] = useState(false);
   const [selectedProductForEdit, setSelectedProductForEdit] = useState(null);
   const [allOrdersDialogTab, setAllOrdersDialogTab] = useState('active');
@@ -46,6 +46,20 @@ function InventoryContent({ userRole }) {
     window.addEventListener('navigateToSection', handleNavigate);
     return () => window.removeEventListener('navigateToSection', handleNavigate);
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeCategory, products.length, itemsPerPage]);
 
   const fetchProducts = async () => {
     try {
@@ -116,16 +130,26 @@ function InventoryContent({ userRole }) {
     if (showEditMode) {
       setSelectedProductForEdit(product);
       setShowEditMode(false);
+      setActiveDialog('editProduct');
     }
   };
 
-  const handleShowAddProductDialog = () => {
-    setShowAddProductDialog(true);
+  const openDialog = (dialogName) => {
+    setSelectedProductForEdit(null);
+    setActiveDialog(dialogName);
   };
 
-  const handleShowAllOrdersDialog = () => {
-    setShowAllOrdersDialog(true);
-  };
+  const handleShowAddProductDialog = () => openDialog('addProduct');
+  const handleShowAllOrdersDialog = () => openDialog('allOrders');
+
+  const filteredProducts = getFilteredProducts();
+  const totalProducts = filteredProducts.length;
+  const pageCount = Math.max(1, Math.ceil(totalProducts / itemsPerPage));
+  const currentPageSafe = Math.min(Math.max(currentPage, 1), pageCount);
+  const startIndex = (currentPageSafe - 1) * itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  const showingFrom = totalProducts === 0 ? 0 : startIndex + 1;
+  const showingTo = totalProducts === 0 ? 0 : Math.min(startIndex + itemsPerPage, totalProducts);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#faf8f9]">
@@ -146,52 +170,90 @@ function InventoryContent({ userRole }) {
             Loading products...
           </div>
         ) : (
-          <ProductDisplay
-            products={getFilteredProducts()}
-            showEditMode={showEditMode}
-            onProductSelect={handleProductSelect}
-            onStockAdded={fetchProducts}
-          />
+          <>
+            {totalProducts === 0 ? (
+              <div className="text-center py-16 text-gray-700">
+                No products found. Try changing your search or category.
+              </div>
+            ) : (
+              <ProductDisplay
+                products={paginatedProducts}
+                showEditMode={showEditMode}
+                onProductSelect={handleProductSelect}
+                onStockAdded={fetchProducts}
+              />
+            )}
+
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                  disabled={currentPageSafe === 1}
+                  className="rounded-full border border-[#65366F] bg-white px-4 py-2 text-sm font-semibold text-[#65366F] transition disabled:cursor-not-allowed disabled:opacity-50 hover:bg-[#f2e9f7]"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-gray-700">
+                  Page <span className="font-semibold">{currentPageSafe}</span> of <span className="font-semibold">{pageCount}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((prev) => Math.min(pageCount, prev + 1))}
+                  disabled={currentPageSafe === pageCount}
+                  className="rounded-full border border-[#65366F] bg-white px-4 py-2 text-sm font-semibold text-[#65366F] transition disabled:cursor-not-allowed disabled:opacity-50 hover:bg-[#f2e9f7]"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="text-sm text-gray-700">
+                Showing <span className="font-semibold">{showingFrom}</span> to <span className="font-semibold">{showingTo}</span> of <span className="font-semibold">{totalProducts}</span> products
+              </div>
+            </div>
+          </>
         )}
       </div>
       <FloatingButtons
         onEditToggle={toggleEditMode}
         onAddProduct={handleShowAddProductDialog}
         onViewAllOrders={handleShowAllOrdersDialog}
-        onManageCategories={() => setShowCategoryManager(true)}
-        onCartOpen={() => setShowCart(true)}
+        onManageCategories={() => openDialog('categories')}
+        onCartOpen={() => openDialog('cart')}
         showEditMode={showEditMode}
         userRole={userRole || JSON.parse(localStorage.getItem('user') || '{}').role}
       />
-      {showCart && (
+      {activeDialog === 'cart' && (
         <Cart
-          onClose={() => setShowCart(false)}
+          onClose={() => setActiveDialog(null)}
           onSubmit={handleCartComplete}
         />
       )}
-      {showAllOrdersDialog && (
+      {activeDialog === 'allOrders' && (
         <AllOrdersDialog
-          onClose={() => setShowAllOrdersDialog(false)}
+          onClose={() => setActiveDialog(null)}
           initialTab={allOrdersDialogTab}
         />
       )}
-      {showAddProductDialog && (
+      {activeDialog === 'addProduct' && (
         <AddProductDialog
-          onClose={() => setShowAddProductDialog(false)}
+          onClose={() => setActiveDialog(null)}
           fetchProducts={fetchProducts}
         />
       )}
-      {selectedProductForEdit && (
+      {activeDialog === 'editProduct' && selectedProductForEdit && (
         <EditProductDialog
           product={selectedProductForEdit}
           userRole={userRole || JSON.parse(localStorage.getItem('user') || '{}').role}
-          onClose={() => setSelectedProductForEdit(null)}
+          onClose={() => {
+            setSelectedProductForEdit(null);
+            setActiveDialog(null);
+          }}
           fetchProducts={fetchProducts}
         />
       )}
-      {showCategoryManager && (
+      {activeDialog === 'categories' && (
         <CategoryManagerDialog
-          onClose={() => setShowCategoryManager(false)}
+          onClose={() => setActiveDialog(null)}
           products={products}
           fetchProducts={fetchProducts}
         />

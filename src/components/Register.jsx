@@ -28,6 +28,15 @@ const Register = () => {
     }));
   };
 
+  const passwordCriteria = {
+    length: formData.password.length >= 8,
+    uppercase: /[A-Z]/.test(formData.password),
+    lowercase: /[a-z]/.test(formData.password),
+    number: /[0-9]/.test(formData.password),
+    specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password),
+    noSpaces: !/\s/.test(formData.password)
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -45,11 +54,16 @@ const Register = () => {
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else {
+      const failedCriteria = Object.values(passwordCriteria).some((valid) => !valid);
+      if (failedCriteria) {
+        newErrors.password = 'Password must be at least 8 characters, include upper and lower case letters, a number, a special character, and contain no spaces.';
+      }
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
@@ -141,12 +155,58 @@ const Register = () => {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        setErrors({ general: error.message });
+        toast.error(error.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      const message = err?.message || 'Google sign up failed';
+      setErrors({ general: message });
+      toast.error(message);
+      setLoading(false);
+      console.error('Google sign up error:', err);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#f8eef8] via-[#f0e1f3] to-[#f7f0e8] px-4">
       <div className="w-full max-w-md rounded-[32px] border border-[#D9B5CC]/30 bg-white/95 shadow-[0_20px_60px_rgba(139,56,136,0.15)] p-8">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-[#280A4F] mb-1 font-['Satoshi']">KARINEYOSA</h1>
           <p className="text-sm text-[#65366F]">What you see is what you get</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignUp}
+          disabled={loading}
+          className="w-full mb-4 rounded-2xl border border-[#D9B5CC] bg-white px-5 py-3 text-[#202124] font-semibold shadow-sm transition hover:bg-[#f7f8fa] disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-3"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#4285F4" d="M23.49 12.27c0-.78-.07-1.53-.2-2.25H12v4.26h6.54c-.28 1.5-1.09 2.77-2.32 3.62v3.02h3.75c2.19-2.01 3.45-5.01 3.45-8.65z"/>
+            <path fill="#34A853" d="M12 24c3.15 0 5.79-1.04 7.72-2.83l-3.75-3.02c-1.04.7-2.37 1.12-3.97 1.12-3.05 0-5.64-2.06-6.57-4.83H1.6v3.04C3.52 21.95 7.46 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.43 14.44c-.24-.7-.38-1.45-.38-2.22s.14-1.52.38-2.22V6.96H1.6C.57 8.63 0 10.73 0 12.99c0 2.27.57 4.37 1.6 6.03l3.83-3.58z"/>
+            <path fill="#EA4335" d="M12 4.79c1.71 0 3.25.59 4.46 1.75l3.35-3.35C17.78 1.44 15.14 0 12 0 7.46 0 3.52 2.05 1.6 5.96l3.83 3.04c.93-2.77 3.52-4.83 6.57-4.83z"/>
+          </svg>
+          {loading ? 'Redirecting...' : 'Continue with Google'}
+        </button>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-px flex-1 bg-[#D9B5CC]/40" />
+          <span className="text-sm text-[#65366F]">or sign up with</span>
+          <div className="h-px flex-1 bg-[#D9B5CC]/40" />
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -206,7 +266,7 @@ const Register = () => {
                 className={`w-full rounded-2xl border px-4 py-3 pr-12 text-[#4A2B4F] placeholder:text-[#A986B5] bg-[#FDF6FB] focus:border-[#841c4f] focus:ring-2 focus:ring-[#D1C6F3]/40 outline-none transition ${
                   errors.password ? 'border-red-400' : 'border-[#C9A8C9]'
                 }`}
-                placeholder="Enter password (min 6 characters)"
+                placeholder="Enter password"
                 required
               />
               <button
@@ -221,6 +281,33 @@ const Register = () => {
                 </svg>
               </button>
             </div>
+            {formData.password.length > 0 && (
+              <div className="mt-4 rounded-2xl border border-[#E0D4EA] bg-[#F9F6FF] p-4 text-sm text-[#4A2B4F]">
+                <p className="mb-2 font-semibold text-[#65366F]">Password requirements</p>
+                <ul className="space-y-2">
+                  <li className={`flex items-center gap-2 ${passwordCriteria.length ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                    <span>{passwordCriteria.length ? '✔' : '○'}</span>
+                    At least 8 characters
+                  </li>
+                  <li className={`flex items-center gap-2 ${passwordCriteria.uppercase ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                    <span>{passwordCriteria.uppercase ? '✔' : '○'}</span>
+                    Upper and lower case letters
+                  </li>
+                  <li className={`flex items-center gap-2 ${passwordCriteria.number ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                    <span>{passwordCriteria.number ? '✔' : '○'}</span>
+                    At least one number
+                  </li>
+                  <li className={`flex items-center gap-2 ${passwordCriteria.specialChar ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                    <span>{passwordCriteria.specialChar ? '✔' : '○'}</span>
+                    At least one special character
+                  </li>
+                  <li className={`flex items-center gap-2 ${passwordCriteria.noSpaces ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                    <span>{passwordCriteria.noSpaces ? '✔' : '○'}</span>
+                    No spaces
+                  </li>
+                </ul>
+              </div>
+            )}
             {errors.password && (
               <p className="mt-2 text-sm text-red-600">{errors.password}</p>
             )}
