@@ -15,44 +15,39 @@ const ResetPasswordModal = ({ onClose, onBackToLogin }) => {
 
   useEffect(() => {
     const initializeRecoverySession = async () => {
-      try {
-        // First, ensure Supabase reads the recovery token from the URL
-        const { data: { session }, error: urlError } = await supabase.auth.getSessionFromUrl();
-        
-        if (urlError) {
-          console.warn('getSessionFromUrl error:', urlError?.message ?? urlError);
-        }
+      const hash = window.location.hash || window.location.search;
+      const isRecoveryUrl = hash && hash.includes('type=recovery');
 
-        // Wait a bit for the session to be established
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Now check if we have a valid session
-        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Error fetching recovery session:', sessionError);
-          setError('Unable to verify reset session. Please try the link again.');
-          setRecoveryReady(false);
-          return;
-        }
-
-        if (!currentSession?.user) {
-          setError('Auth session missing! Please use the password reset link from your email again.');
-          setRecoveryReady(false);
-          return;
-        }
-
-        localStorage.setItem('recoveryMode', 'true');
-        toast.info('Secure session established. Please set your new password.', { autoClose: 5000 });
-        setRecoveryReady(true);
-      } catch (err) {
-        console.error('Recovery initialization error:', err);
-        setError('An error occurred while initializing reset password. Please try again.');
+      if (!isRecoveryUrl) {
+        setError('Invalid reset link. Please use the link from your email.');
+        setRecoveryReady(false);
+        return;
       }
-    };
 
-    initializeRecoverySession();
-  }, []);
+      try {
+        await supabase.auth.getSessionFromUrl?.();
+      } catch (err) {
+        console.warn('getSessionFromUrl warning:', err?.message ?? err);
+      }
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Error fetching recovery session:', sessionError);
+        setError('Unable to verify reset session. Please try the link again.');
+        setRecoveryReady(false);
+        return;
+      }
+
+      if (!sessionData?.session?.user) {
+        setError('Auth session missing! Please use the password reset link from your email again.');
+        setRecoveryReady(false);
+        return;
+      }
+
+      localStorage.setItem('recoveryMode', 'true');
+      toast.info('Secure session established. Please set your new password.', { autoClose: 5000 });
+      setRecoveryReady(true);
+    };
 
     initializeRecoverySession();
   }, []);
