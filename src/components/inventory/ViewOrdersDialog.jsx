@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import { supabase } from '../../supabase';
 import EditOrderDialog from './EditOrderDialog';
 import CancelOrderDialog from './CancelOrderDialog';
@@ -98,12 +99,12 @@ function ViewOrdersDialog({ product, onClose }) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 min-h-screen bg-black/50 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 overflow-hidden p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <style>{`body { overflow: hidden; }`}</style>
-      <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-4 md:p-6 w-full max-w-6xl shadow-lg max-h-[90vh] flex flex-col overflow-hidden">
+    <ModalPortal>
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
+        <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] p-4 md:p-6 shadow-lg flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex justify-between items-start gap-3 mb-3 md:mb-5 pb-3 md:pb-4 border-b-2 border-[#d2679f]/30 flex-shrink-0">
           <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -227,6 +228,7 @@ function ViewOrdersDialog({ product, onClose }) {
         )}
       </div>
     </div>
+  </ModalPortal>
   );
 }
 

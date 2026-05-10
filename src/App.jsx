@@ -9,8 +9,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './components/dashboard/index';
 import Inventory from './components/inventory/index';
 import SalesHistory from './components/salesHistory/index';
-import Login from './components/Login';
-import Register from './components/Register';
+import LandingPage from './components/LandingPage';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import UserManagement from './components/admin/UserManagement';
@@ -149,9 +148,10 @@ export default function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+        style={{ position: 'fixed', top: '76px', right: '20px', zIndex: 9999 }}
       />
       {isLoggedIn && !isInRecoveryMode ? (
-        <div className="h-screen w-screen bg-[#f5eef3] dark:bg-dark-background overflow-hidden">
+        <div className="min-h-screen w-screen bg-[#f5eef3] dark:bg-dark-background overflow-visible">
           <Sidebar onLogout={handleLogout} userRole={userRole}>
             <main className="w-full h-full">
               <Routes>
@@ -211,11 +211,12 @@ export default function App() {
         </div>
       ) : (
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LandingPage />} />
+          <Route path="/register" element={<LandingPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       )}
       {/* Show ResetPassword as full-screen overlay when in recovery mode */}

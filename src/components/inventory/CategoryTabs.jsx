@@ -2,55 +2,74 @@ import { useState, useEffect } from 'react';
 import CategoryTab from './CategoryTab';
 import { PRODUCT_CATEGORIES } from './constants';
 
-function CategoryTabs({ activeCategory, onCategoryChange, products = [] }) {
-  const [sortedCategories, setSortedCategories] = useState(PRODUCT_CATEGORIES);
+const CATEGORY_SORT_KEY = 'categoryDisplaySortMode';
+const SORT_MODES = {
+  DEFAULT: 'default',
+  ALPHABETICAL: 'alphabetical',
+  STOCK_DESC: 'stock-desc'
+};
 
-  useEffect(() => {
-    // Calculate total stock for each category
-    const categoryStocks = {};
-    
-    // Initialize all categories with 0 stock
-    PRODUCT_CATEGORIES.forEach(cat => {
-      categoryStocks[cat.value] = 0;
-    });
+const getStoredSortMode = () => {
+  if (typeof window === 'undefined') return SORT_MODES.STOCK_DESC;
+  return localStorage.getItem(CATEGORY_SORT_KEY) || SORT_MODES.STOCK_DESC;
+};
 
-    // Sum up stocks for each category
-    products.forEach(product => {
-      if (categoryStocks.hasOwnProperty(product.category)) {
-        categoryStocks[product.category] += product.totalStock || 0;
-      }
-    });
+const getCategoryStocks = (products) => {
+  const categoryStocks = {};
+  PRODUCT_CATEGORIES.forEach(cat => {
+    categoryStocks[cat.value] = 0;
+  });
+  products.forEach(product => {
+    if (categoryStocks.hasOwnProperty(product.category)) {
+      categoryStocks[product.category] += product.totalStock || 0;
+    }
+  });
+  return categoryStocks;
+};
 
-    // Sort categories by stock (highest first)
-    const sorted = [...PRODUCT_CATEGORIES].sort((a, b) => {
+const sortCategories = (categories, products, mode) => {
+  if (mode === SORT_MODES.ALPHABETICAL) {
+    return [...categories].sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  if (mode === SORT_MODES.STOCK_DESC) {
+    const categoryStocks = getCategoryStocks(products);
+    return [...categories].sort((a, b) => {
       const stockA = categoryStocks[a.value] || 0;
       const stockB = categoryStocks[b.value] || 0;
       return stockB - stockA;
     });
+  }
 
-    setSortedCategories(sorted);
-  }, [products]);
+  return [...categories];
+};
+
+function CategoryTabs({ activeCategory, onCategoryChange, products = [] }) {
+  const [sortMode, setSortMode] = useState(getStoredSortMode());
+  const [sortedCategories, setSortedCategories] = useState(() => sortCategories(PRODUCT_CATEGORIES, products, getStoredSortMode()));
 
   useEffect(() => {
-    const handler = () => {
-      const categoryStocks = {};
-      PRODUCT_CATEGORIES.forEach(cat => { categoryStocks[cat.value] = 0; });
-      products.forEach(product => {
-        if (categoryStocks.hasOwnProperty(product.category)) {
-          categoryStocks[product.category] += product.totalStock || 0;
-        }
-      });
-      const sorted = [...PRODUCT_CATEGORIES].sort((a, b) => {
-        const stockA = categoryStocks[a.value] || 0;
-        const stockB = categoryStocks[b.value] || 0;
-        return stockB - stockA;
-      });
-      setSortedCategories(sorted);
+    const sorted = sortCategories(PRODUCT_CATEGORIES, products, sortMode);
+    setSortedCategories(sorted);
+  }, [products, sortMode]);
+
+  useEffect(() => {
+    const updateCategories = () => {
+      setSortedCategories(sortCategories(PRODUCT_CATEGORIES, products, sortMode));
     };
 
-    window.addEventListener('productCategoriesChanged', handler);
-    return () => window.removeEventListener('productCategoriesChanged', handler);
-  }, [products]);
+    const updateSortMode = () => {
+      setSortMode(getStoredSortMode());
+    };
+
+    window.addEventListener('productCategoriesChanged', updateCategories);
+    window.addEventListener('categorySortModeChanged', updateSortMode);
+
+    return () => {
+      window.removeEventListener('productCategoriesChanged', updateCategories);
+      window.removeEventListener('categorySortModeChanged', updateSortMode);
+    };
+  }, [products, sortMode]);
 
   return (
     <div className="top-0 left-0 lg:left-[80px] w-full h-[52px] sm:h-[56px] shadow-md z-10" style={{ background: 'linear-gradient(135deg, #D1C6F3 0%, #E9BCAC 100%)' }}>

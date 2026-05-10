@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import { supabase } from '../../supabase';
 
 function EditOrderDialog({ order, onClose, onSuccess }) {
@@ -115,14 +116,15 @@ function EditOrderDialog({ order, onClose, onSuccess }) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-      onClick={onClose}
-    >
+    <ModalPortal>
       <div 
-        className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-8 w-[550px] shadow-lg max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto"
+        onClick={onClose}
       >
+        <div 
+          className="relative w-full max-w-[550px] max-h-[90vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] p-8 shadow-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-[#841c4f]">Edit Order</h2>
           <button

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCart } from '../CartContext';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import { supabase } from '../../supabase';
 
 const Cart = ({ onClose, onSubmit }) => {
@@ -213,9 +214,9 @@ const Cart = ({ onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 min-h-screen bg-black/50 flex items-start sm:items-center justify-center z-50 overflow-hidden p-4">
-      <style>{`body { overflow: hidden; }`}</style>
-      <div ref={dialogRef} className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-xl w-[95vw] max-w-6xl h-[90vh] overflow-hidden flex flex-col">
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 overflow-y-auto" onClick={onClose}>
+        <div ref={dialogRef} className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] shadow-2xl flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] border-b-2 border-[#841c4f]/20 px-4 py-4 md:p-6 flex items-center justify-between flex-shrink-0">
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-[#841c4f]">Shopping Cart</h2>
@@ -340,6 +341,7 @@ const Cart = ({ onClose, onSubmit }) => {
         </form>
       </div>
     </div>
+  </ModalPortal>
   );
 };
 

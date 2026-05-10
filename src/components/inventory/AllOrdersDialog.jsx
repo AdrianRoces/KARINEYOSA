@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import EditTransactionDialog from './EditTransactionDialog';
 import CustomersTabContent from './CustomersTabContent';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
@@ -258,12 +259,12 @@ function AllOrdersDialog({ onClose, initialTab = 'active' }) {
   const allTransactions = groupTransactions(orders);
 
   return (
-    <div 
-      className="fixed inset-0 min-h-screen bg-black/50 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 overflow-hidden p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <style>{`body { overflow: hidden; }`}</style>
-      <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg w-full max-w-6xl max-h-[90vh] shadow-lg flex flex-col overflow-hidden">
+    <ModalPortal>
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
+        <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] shadow-lg flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="px-4 md:px-6 pt-4 md:pt-6 pb-0 flex justify-between items-center flex-shrink-0 gap-4">
           <h2 className="text-lg md:text-xl font-bold text-[#841c4f] truncate">TRANSACTIONS</h2>
           <button
@@ -593,6 +594,7 @@ function AllOrdersDialog({ onClose, initialTab = 'active' }) {
         />
       )}
     </div>
+  </ModalPortal>
   );
 }
 

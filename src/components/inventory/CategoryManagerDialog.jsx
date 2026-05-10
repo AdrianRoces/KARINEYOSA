@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { PRODUCT_CATEGORIES, addCategory, removeCategory, editCategory } from './constants';
 import { supabase } from '../../supabase';
+
+const CATEGORY_SORT_KEY = 'categoryDisplaySortMode';
+const SORT_OPTIONS = [
+  { value: 'default', label: 'Default order' },
+  { value: 'alphabetical', label: 'Alphabetical' },
+  { value: 'stock-desc', label: 'Stock (high → low)' },
+];
 
 export default function CategoryManagerDialog({ onClose, products = [], fetchProducts }) {
   const [categories, setCategories] = useState([...PRODUCT_CATEGORIES]);
@@ -11,9 +19,14 @@ export default function CategoryManagerDialog({ onClose, products = [], fetchPro
   const [editingValue, setEditingValue] = useState(null);
   const [editingLabel, setEditingLabel] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [sortMode, setSortMode] = useState(SORT_OPTIONS[2].value);
 
   useEffect(() => {
     setCategories([...PRODUCT_CATEGORIES]);
+    if (typeof window !== 'undefined') {
+      const storedMode = localStorage.getItem(CATEGORY_SORT_KEY);
+      if (storedMode) setSortMode(storedMode);
+    }
   }, []);
 
   const handleAdd = () => {
@@ -31,6 +44,16 @@ export default function CategoryManagerDialog({ onClose, products = [], fetchPro
       toast.success(`✅ Category ${label} added`, { autoClose: 1800, theme: 'colored' });
     } else {
       toast.info('Category already exists', { autoClose: 1600, theme: 'colored' });
+    }
+  };
+
+  const handleSortModeChange = (mode) => {
+    setSortMode(mode);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(CATEGORY_SORT_KEY, mode);
+        window.dispatchEvent(new CustomEvent('categorySortModeChanged'));
+      } catch (e) {}
     }
   };
 
@@ -88,8 +111,9 @@ export default function CategoryManagerDialog({ onClose, products = [], fetchPro
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="w-[520px] bg-white rounded-lg p-6 shadow-lg" onClick={(e) => e.stopPropagation()}>
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 overflow-y-auto" onClick={onClose}>
+        <div className="relative w-full max-w-[520px] max-h-[90vh] overflow-y-auto rounded-[28px] p-6 shadow-2xl bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] border border-[#841c4f]/20" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-[#841c4f]">Manage Categories</h3>
           <button onClick={onClose} className="text-gray-600">✕</button>
@@ -101,6 +125,22 @@ export default function CategoryManagerDialog({ onClose, products = [], fetchPro
             <input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} className="flex-1 px-3 py-2 border rounded" placeholder="e.g., Party Dress" />
             <button onClick={handleAdd} className="px-4 py-2 bg-[#841c4f] text-white rounded">Add</button>
           </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Category display order</label>
+          <select
+            value={sortMode}
+            onChange={(e) => handleSortModeChange(e.target.value)}
+            className="w-full px-3 py-2 border rounded bg-white"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <p className="mt-2 text-xs text-gray-500">Choose how categories appear in the inventory tabs.</p>
         </div>
 
         <div className="max-h-[300px] overflow-y-auto border-t pt-3">
@@ -145,5 +185,6 @@ export default function CategoryManagerDialog({ onClose, products = [], fetchPro
         />
       </div>
     </div>
+  </ModalPortal>
   );
 }

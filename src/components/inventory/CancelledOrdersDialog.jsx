@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import RestoreOrderDialog from './RestoreOrderDialog';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { supabase } from '../../supabase';
@@ -136,12 +137,12 @@ function CancelledOrdersDialog({ product, onClose }) {
   }
 
   return (
-    <div 
-      className="fixed inset-0 min-h-screen bg-black/50 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 overflow-hidden p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <style>{`body { overflow: hidden; }`}</style>
-      <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-6 w-full max-w-[1200px] shadow-lg max-h-[90vh] flex flex-col overflow-hidden">
+    <ModalPortal>
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
+        <div className="relative w-full max-w-[1200px] max-h-[90vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] p-6 shadow-lg" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-[#841c4f] text-xl font-bold">CANCELLED ORDERS</h2>
           <div className="flex gap-2">

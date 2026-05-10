@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
 import { supabase } from '../../supabase';
 import CategoryTabs from './CategoryTabs';
 import SearchBar from './SearchBar';
@@ -104,7 +103,7 @@ function InventoryContent({ userRole }) {
 
   const handleCartComplete = async () => {
     await fetchProducts();
-    setShowCart(false);
+    setActiveDialog(null);
     clearCart();
   };
 
@@ -258,7 +257,6 @@ function InventoryContent({ userRole }) {
           fetchProducts={fetchProducts}
         />
       )}
-      <ToastContainer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import { supabase } from '../../supabase';
 
 function EditTransactionDialog({ transaction, onClose, onSave }) {
@@ -60,8 +61,9 @@ function EditTransactionDialog({ transaction, onClose, onSave }) {
   const transactionTotal = itemsTotal + shippingTotal;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-6 w-[900px] shadow-lg max-h-[85vh] overflow-y-auto">
+    <ModalPortal>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto">
+        <div className="relative w-full max-w-[900px] max-h-[85vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] p-6 shadow-lg">
         <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#d2679f]/30">
           <h2 className="text-2xl font-bold text-[#841c4f]">Transaction Details</h2>
           <button
@@ -233,6 +235,7 @@ function EditTransactionDialog({ transaction, onClose, onSave }) {
         </div>
       </div>
     </div>
+  </ModalPortal>
   );
 }
 

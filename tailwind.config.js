@@ -24,7 +24,37 @@ export default {
       },
       flex: {
         '3': '3 3 0%'
-      }
+      },
+      keyframes: {
+        slowZoom: {
+          'from': { transform: 'scale(1)' },
+          'to': { transform: 'scale(1.04)' },
+        },
+        fadeUp: {
+          'from': { 
+            opacity: '0',
+            transform: 'translateY(24px)'
+          },
+          'to': { 
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+        },
+        fadeIn: {
+          'from': { opacity: '0' },
+          'to': { opacity: '1' },
+        },
+        floatNav: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(3px)' },
+        },
+      },
+      animation: {
+        slowZoom: 'slowZoom 18s ease-in-out infinite alternate',
+        fadeUp: 'fadeUp 1.2s ease-out forwards',
+        fadeIn: 'fadeIn 1s ease-out',
+        floatNav: 'floatNav 6s ease-in-out infinite',
+      },
     },
   },
   plugins: [

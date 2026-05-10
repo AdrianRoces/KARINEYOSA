@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import ModalPortal from './ModalPortal';
 import { supabase } from '../../supabase';
 
 function CancelOrderDialog({ order, onClose, onSuccess }) {
@@ -106,14 +107,15 @@ function CancelOrderDialog({ order, onClose, onSuccess }) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
+    <ModalPortal>
       <div 
-        className="bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-lg p-6 w-96 shadow-lg"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 overflow-y-auto"
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
+        <div 
+          className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-[28px] bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] p-6 shadow-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-[#841c4f] text-xl font-bold">Cancel Order</h2>
           <button
