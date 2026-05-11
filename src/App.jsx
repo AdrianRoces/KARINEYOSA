@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/dashboard/index';
@@ -133,29 +134,19 @@ export default function App() {
     );
   }
 
-  // Check if user is in recovery mode to show ResetPassword as full-screen overlay
   const isInRecoveryMode = localStorage.getItem('recoveryMode') === 'true';
 
-  return (
-    <Router>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        style={{ position: 'fixed', top: '76px', right: '20px', zIndex: 10000 }}
-      />
-      {isLoggedIn && !isInRecoveryMode ? (
+  const AppContent = () => {
+    const location = useLocation();
+    const isResetPath = location.pathname === '/reset-password';
+    const shouldShowApp = isLoggedIn && !isInRecoveryMode && !isResetPath;
+
+    if (shouldShowApp) {
+      return (
         <div className="min-h-screen w-screen bg-[#f5eef3] dark:bg-dark-background overflow-visible">
           <Sidebar onLogout={handleLogout} userRole={userRole}>
             <main className="w-full h-full">
               <Routes>
-                
                 <Route 
                   path="/dashboard" 
                   element={
@@ -209,18 +200,36 @@ export default function App() {
             </main>
           </Sidebar>
         </div>
-      ) : (
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LandingPage />} />
-          <Route path="/register" element={<LandingPage />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      )}
-      {/* Show ResetPassword as full-screen overlay when in recovery mode */}
-      {isLoggedIn && isInRecoveryMode && <ResetPassword />}
+      );
+    }
+
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LandingPage />} />
+        <Route path="/register" element={<LandingPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
+  };
+
+  return (
+    <Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ position: 'fixed', top: '76px', right: '20px', zIndex: 10000 }}
+      />
+      <AppContent />
     </Router>
   );
 }
