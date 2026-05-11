@@ -148,7 +148,7 @@ export default function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        style={{ position: 'fixed', top: '76px', right: '20px', zIndex: 9999 }}
+        style={{ position: 'fixed', top: '76px', right: '20px', zIndex: 10000 }}
       />
       {isLoggedIn && !isInRecoveryMode ? (
         <div className="min-h-screen w-screen bg-[#f5eef3] dark:bg-dark-background overflow-visible">

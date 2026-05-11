@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { supabase, auth } from '../supabase';
+import { supabase, auth, APP_URL } from '../supabase';
 import { X } from 'lucide-react';
 
 const RegisterModal = ({ onClose, onLoginClick }) => {
@@ -157,7 +157,7 @@ const RegisterModal = ({ onClose, onLoginClick }) => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo: APP_URL
         }
       });
 

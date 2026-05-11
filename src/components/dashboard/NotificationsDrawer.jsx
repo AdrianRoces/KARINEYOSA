@@ -1,16 +1,45 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../supabase';
 
-function timeAgo(iso) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const sec = Math.floor(diff / 1000);
-  if (sec < 60) return `${sec}s ago`;
-  const min = Math.floor(sec / 60);
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  const days = Math.floor(hr / 24);
-  return `${days}d ago`;
+// Hook for live-updating time display
+function useTimeAgo(iso) {
+  const [display, setDisplay] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const diff = Date.now() - new Date(iso).getTime();
+      const sec = Math.floor(diff / 1000);
+      
+      if (sec < 60) {
+        setDisplay(`${sec}s ago`);
+      } else {
+        const min = Math.floor(sec / 60);
+        if (min < 60) {
+          setDisplay(`${min}m ago`);
+        } else {
+          const hr = Math.floor(min / 60);
+          if (hr < 24) {
+            setDisplay(`${hr}h ago`);
+          } else {
+            const days = Math.floor(hr / 24);
+            if (days < 365) {
+              setDisplay(`${days}d ago`);
+            } else {
+              const years = Math.floor(days / 365);
+              setDisplay(`${years}y ago`);
+            }
+          }
+        }
+      }
+    };
+
+    updateTime();
+    // Update every minute to keep display accurate
+    const interval = setInterval(updateTime, 60000);
+    return () => clearInterval(interval);
+  }, [iso]);
+
+  return display;
 }
 
 export default function NotificationsDrawer() {
@@ -64,14 +93,15 @@ export default function NotificationsDrawer() {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error(e); }
   };
 
-  const mergeGeneratedNotifications = (generated) => {
+  const mergeGeneratedNotifications = (generated, currentDeletedIds) => {
     if (generated.length === 0) return;
     
     const storedMap = new Map(storedNotifications.map(n => [n.id, n]));
     const nextStored = [...storedNotifications];
 
     generated.forEach(g => {
-      if (deletedIds.includes(g.id)) return;
+      // Check against current deleted IDs to prevent re-showing dismissed notifications
+      if (currentDeletedIds.includes(g.id)) return;
       const existing = storedMap.get(g.id);
       if (existing) {
         existing.message = g.message;
@@ -91,6 +121,11 @@ export default function NotificationsDrawer() {
 
   const fetchAndMergeNotifications = async () => {
     try {
+      // Load current deleted IDs from localStorage to avoid closure stale state issue
+      const currentDeletedIds = (() => {
+        try { return JSON.parse(localStorage.getItem('deletedNotifications') || '[]'); } catch (e) { return []; }
+      })();
+
       const [productsResp, ordersResp, customersResp] = await Promise.all([
         supabase.from('products').select('*, sizes(remaining_quantity)'),
         supabase.from('orders').select('*'),
@@ -274,7 +309,7 @@ export default function NotificationsDrawer() {
         }
       });
 
-      mergeGeneratedNotifications(generated);
+      mergeGeneratedNotifications(generated, currentDeletedIds);
       setCustomerStatusMap(currentStatus);
       setSeenTxnIds(currentTxnIds);
       saveToLocalStorage('customerStatusMap', currentStatus);
@@ -314,6 +349,37 @@ export default function NotificationsDrawer() {
   };
 
   const visibleNotes = filter === 'unread' ? storedNotifications.filter(n => !n.read) : storedNotifications;
+
+  // Notification card component with live time display
+  const NotificationCard = ({ note }) => {
+    const timeDisplay = useTimeAgo(note.timestamp);
+    
+    let borderColor = 'border-gray-200';
+    if (note.category?.includes('critical') || note.category?.includes('autocancel') || note.category?.includes('bogus')) borderColor = 'border-red-400';
+    else if (note.category?.includes('warning') || note.category?.includes('low')) borderColor = 'border-yellow-400';
+    else if (note.category?.includes('new')) borderColor = 'border-blue-300';
+    else if (note.category?.includes('loyal')) borderColor = 'border-green-400';
+
+    return (
+      <div className={`p-4 rounded-xl bg-white border-l-4 ${borderColor} shadow-sm hover:shadow-md transition-shadow flex justify-between items-start`}>
+        <div className="flex-1">
+          <div className="flex items-start gap-3">
+            <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${note.read ? 'bg-transparent' : 'bg-[#841c4f]'}`} />
+            <div>
+              <div className="text-sm text-gray-800 font-medium leading-snug">{note.message}</div>
+              <div className="text-xs text-gray-500 mt-1.5">{timeDisplay}</div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-3 ml-4 flex-shrink-0">
+          {!note.read && (
+            <button onClick={() => markAsRead(note.id)} className="text-xs font-semibold text-[#65366F] hover:text-[#841c4f] transition-colors">Mark read</button>
+          )}
+          <button onClick={() => deleteNotification(note.id)} className="text-xs font-semibold text-red-500 hover:text-red-700 transition-colors">Dismiss</button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="flex items-center">
@@ -368,34 +434,9 @@ export default function NotificationsDrawer() {
               {visibleNotes.length === 0 ? (
                 <div className="text-center text-gray-700 mt-12 font-medium">You're all caught up!</div>
               ) : (
-                visibleNotes.map(note => {
-                  // Determine professional border colors based on severity
-                  let borderColor = 'border-gray-200';
-                  if (note.category?.includes('critical') || note.category?.includes('autocancel') || note.category?.includes('bogus')) borderColor = 'border-red-400';
-                  else if (note.category?.includes('warning') || note.category?.includes('low')) borderColor = 'border-yellow-400';
-                  else if (note.category?.includes('new')) borderColor = 'border-blue-300';
-                  else if (note.category?.includes('loyal')) borderColor = 'border-green-400';
-
-                  return (
-                    <div key={note.id} className={`p-4 rounded-xl bg-white border-l-4 ${borderColor} shadow-sm hover:shadow-md transition-shadow flex justify-between items-start`}>
-                      <div className="flex-1">
-                        <div className="flex items-start gap-3">
-                          <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${note.read ? 'bg-transparent' : 'bg-[#841c4f]'}`} />
-                          <div>
-                            <div className="text-sm text-gray-800 font-medium leading-snug">{note.message}</div>
-                            <div className="text-xs text-gray-500 mt-1.5">{timeAgo(note.timestamp)}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-3 ml-4 flex-shrink-0">
-                        {!note.read && (
-                          <button onClick={() => markAsRead(note.id)} className="text-xs font-semibold text-[#65366F] hover:text-[#841c4f] transition-colors">Mark read</button>
-                        )}
-                        <button onClick={() => deleteNotification(note.id)} className="text-xs font-semibold text-red-500 hover:text-red-700 transition-colors">Dismiss</button>
-                      </div>
-                    </div>
-                  );
-                })
+                visibleNotes.map(note => (
+                  <NotificationCard key={note.id} note={note} />
+                ))
               )}
             </div>
           </aside>

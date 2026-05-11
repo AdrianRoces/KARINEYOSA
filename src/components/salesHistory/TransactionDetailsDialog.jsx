@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import ModalPortal from '../inventory/ModalPortal';
 
 export default function TransactionDetailsDialog({ transaction, onClose }) {
   const dialogRef = useRef(null);
@@ -19,14 +20,15 @@ export default function TransactionDetailsDialog({ transaction, onClose }) {
   const items = Array.isArray(transaction.items) ? transaction.items : [];
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={(event) => {
-        if (dialogRef.current && !dialogRef.current.contains(event.target)) {
-          onClose();
-        }
-      }}
-    >
+    <ModalPortal>
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
+        onClick={(event) => {
+          if (dialogRef.current && !dialogRef.current.contains(event.target)) {
+            onClose();
+          }
+        }}
+      >
       <div
         ref={dialogRef}
         className="w-full max-w-[920px] max-h-[92vh] overflow-y-auto bg-gradient-to-b from-[#e7d6f7] to-[#f7d6d0] rounded-3xl p-6 shadow-2xl border border-[#d2679f]/30"
@@ -130,5 +132,6 @@ export default function TransactionDetailsDialog({ transaction, onClose }) {
         </div>
       </div>
     </div>
+  </ModalPortal>
   );
 }

@@ -169,6 +169,22 @@ create or replace function public.is_admin_or_employee() returns boolean languag
   );
 $$;
 
+create or replace function public.admin_delete_profile(target_id uuid) returns boolean language plpgsql security definer as $$
+begin
+  delete from public.profiles
+  where id = target_id
+    and exists (
+      select 1 from public.profiles padmin
+      where padmin.id = auth.uid()
+        and padmin.role = 'admin'
+        and padmin.is_active = true
+    );
+  return found;
+end;
+$$;
+
+grant execute on function public.admin_delete_profile(uuid) to authenticated;
+
 -- Enable RLS
 alter table public.profiles enable row level security;
 alter table public.product_sets enable row level security;

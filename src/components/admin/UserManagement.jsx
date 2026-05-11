@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { supabase } from '../../supabase'; 
+import { supabase } from '../../supabase';
+import ModalPortal from '../inventory/ModalPortal'; 
 
 const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,16 @@ const AdminUserManagement = () => {
   const [editIsActive, setEditIsActive] = useState(true);
   const [editRole, setEditRole] = useState('employee'); // Default mapping from user -> employee
   const [editPassword, setEditPassword] = useState(''); 
+  const [deleteLoading, setDeleteLoading] = useState(false); 
+
+  const passwordCriteria = {
+    length: editPassword.length >= 8,
+    uppercase: /[A-Z]/.test(editPassword),
+    lowercase: /[a-z]/.test(editPassword),
+    number: /[0-9]/.test(editPassword),
+    specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(editPassword),
+    noSpaces: !/\s/.test(editPassword)
+  }; 
 
   useEffect(() => {
     fetchUsers();
@@ -212,20 +223,38 @@ const AdminUserManagement = () => {
                     </button>
                     <button
                       onClick={async () => {
-                        if (!confirm('Delete this user? This action is irreversible.')) return;
+                        if (!confirm(`Delete user "${user.username}"? This action is irreversible and cannot be undone.`)) return;
+                        setDeleteLoading(true);
                         try {
-                          const { error } = await supabase.from('profiles').delete().eq('id', user.id);
+                          const { data, error } = await supabase.rpc('admin_delete_profile', { target_id: user.id });
+
                           if (error) throw error;
-                          toast.success('User deleted successfully');
+                          if (!data) {
+                            throw new Error('No profile row deleted. This may mean you are not an admin or the profile does not exist.');
+                          }
+
+                          toast.success(`User "${user.username}" has been deleted successfully`);
+                          setEditUserId(null);
+                          setExpandedUser(null);
+                          setDeleteLoading(false);
                           fetchUsers();
                         } catch (err) {
-                          toast.error('Failed to delete user');
-                          console.error(err);
+                          console.error('Delete user error:', err);
+
+                          if (err.message?.includes('RLS') || err.message?.includes('policy')) {
+                            toast.error('Delete blocked by RLS policy. Contact your database admin.');
+                          } else if (err.message?.includes('foreign key')) {
+                            toast.error('Cannot delete user. User has related records. Delete related data first.');
+                          } else {
+                            toast.error(`Failed to delete user: ${err.message || 'Unknown error'}`);
+                          }
+                          setDeleteLoading(false);
                         }
                       }}
-                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition shadow-md"
+                      disabled={deleteLoading}
+                      className="px-4 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white rounded-lg font-medium transition shadow-md disabled:cursor-not-allowed"
                     >
-                      Delete
+                      {deleteLoading ? 'Deleting...' : 'Delete'}
                     </button>
                     <button
                       onClick={async () => {
@@ -256,7 +285,8 @@ const AdminUserManagement = () => {
     </div>
 
     {editUserId && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+      <ModalPortal>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
         <div className="bg-gradient-to-br from-[#EED2E0] via-[#F5DFE8] to-[#FFE2F0] rounded-xl p-8 shadow-xl min-w-[320px] sm:min-w-[400px] border-2 border-[#D9B5CC]/60">
           <h3 className="text-2xl font-bold mb-6 text-[#280A4F] font-['Satoshi']">Edit User</h3>
           
@@ -271,6 +301,33 @@ const AdminUserManagement = () => {
             onChange={e => setEditPassword(e.target.value)}
             className="w-full border-2 border-[#D9B5CC]/60 p-2 rounded-lg mb-4 focus:outline-none focus:border-[#841c4f] focus:ring-2 focus:ring-[#FFE2F0] bg-white/80 text-sm" 
           />
+          {editPassword.length > 0 && (
+            <div className="mb-4 rounded-2xl border border-[#E0D4EA] bg-[#F9F6FF] p-4 text-sm text-[#4A2B4F]">
+              <p className="mb-2 font-semibold text-[#65366F]">Password requirements</p>
+              <ul className="space-y-2">
+                <li className={`flex items-center gap-2 ${passwordCriteria.length ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                  <span>{passwordCriteria.length ? '✔' : '○'}</span>
+                  At least 8 characters
+                </li>
+                <li className={`flex items-center gap-2 ${passwordCriteria.uppercase ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                  <span>{passwordCriteria.uppercase ? '✔' : '○'}</span>
+                  Upper and lower case letters
+                </li>
+                <li className={`flex items-center gap-2 ${passwordCriteria.number ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                  <span>{passwordCriteria.number ? '✔' : '○'}</span>
+                  At least one number
+                </li>
+                <li className={`flex items-center gap-2 ${passwordCriteria.specialChar ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                  <span>{passwordCriteria.specialChar ? '✔' : '○'}</span>
+                  At least one special character
+                </li>
+                <li className={`flex items-center gap-2 ${passwordCriteria.noSpaces ? 'text-emerald-600' : 'text-[#8f5e90]'}`}>
+                  <span>{passwordCriteria.noSpaces ? '✔' : '○'}</span>
+                  No spaces
+                </li>
+              </ul>
+            </div>
+          )}
           
           <label className="block text-sm font-semibold text-[#841c4f] mb-2">Role</label>
           <select className="w-full border-2 border-[#D9B5CC]/60 p-3 rounded-lg mb-4 focus:outline-none focus:border-[#841c4f] focus:ring-2 focus:ring-[#FFE2F0] bg-white/90 text-[#280A4F] font-medium" value={editRole} onChange={e => setEditRole(e.target.value)}>
@@ -305,6 +362,11 @@ const AdminUserManagement = () => {
                       toast.error('Password must be at least 6 characters long.');
                       return;
                     }
+                    const failedCriteria = Object.values(passwordCriteria).some((valid) => !valid);
+                    if (failedCriteria) {
+                      toast.error('Password must meet all requirements: at least 8 characters, include upper and lower case letters, a number, a special character, and contain no spaces.');
+                      return;
+                    }
                     const { error: passError } = await supabase.rpc('admin_update_user_password', {
                       p_user_id: editUserId,
                       p_new_password: editPassword.trim()
@@ -327,6 +389,7 @@ const AdminUserManagement = () => {
           </div>
         </div>
       </div>
+      </ModalPortal>
     )}
     </>
   );

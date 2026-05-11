@@ -1,0 +1,89 @@
+# SIA102x E-Commerce System Deployment Manual - Reference Information
+
+## Repository Information
+- **GitHub Repository:** https://github.com/AdrianRoces/KARINEYOSA
+- **Owner Contact Email:** adrianroces697@gmail.com
+- **Frontend Code Location:** https://github.com/AdrianRoces/KARINEYOSA
+- **Backend Code Location:** https://github.com/AdrianRoces/KARINEYOSA/tree/main/src/backend
+
+## Project Overview
+- **Application Name:** SIA102x E-Commerce System
+- **Version:** 1.0
+- **Last Updated:** May 10, 2026
+- **Components:**
+  - Frontend: React Vite, Tailwind CSS
+  - Backend: C# ASP.NET Core API (.NET 6+)
+  - Database: Supabase (PostgreSQL)
+  - Authentication: Supabase Auth with JWT tokens
+  - Features: Product management, order tracking, inventory management, sales analytics, employee management
+
+## Hosting Platform
+- **Primary Hosting:** Vercel (Free Tier)
+- **Why Vercel Free Tier is Suitable:**
+  - Ideal for initial operations with minimal users/employees
+  - Provides automatic deployments from GitHub
+  - Supports static site hosting for React frontend
+  - Includes built-in CDN and SSL
+  - Free tier offers sufficient bandwidth and compute for small-scale e-commerce operations
+  - Easy scaling to paid tiers as business grows
+
+## Environment Variables Required
+- VITE_SUPABASE_URL: Supabase project URL
+- VITE_SUPABASE_ANON_KEY: Supabase anonymous key
+- SUPABASE_SERVICE_KEY: For backend operations
+- DATABASE_CONNECTION_STRING: For backend database access
+- JWT_SECRET: For authentication tokens
+
+## Deployment Steps (Frontend - Vercel)
+1. Connect GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Configure build settings:
+   - Build Command: npm run build
+   - Output Directory: dist
+   - Install Command: npm install
+4. Deploy automatically on push to main branch
+
+## Deployment Steps (Backend)
+- Build with: dotnet publish -c Release
+- Set environment variables in hosting platform
+- Ensure database connectivity to Supabase
+
+## Database Setup
+- Use Supabase for PostgreSQL database
+- Run migrations from src/backend/Migrations/
+- Set up authentication redirects to Vercel app URL
+
+## Post-Deployment Verification
+- Test frontend loading on Vercel URL
+- Verify API endpoints connectivity
+- Check authentication flow (login, register, password reset)
+- Validate database operations
+- Test on mobile devices
+
+## Troubleshooting Notes
+- 404 errors on routes: Ensure vercel.json has rewrites for SPA routes
+- Authentication issues: Verify Supabase redirect URLs match Vercel domain
+- Build failures: Check Node.js version compatibility (18+)
+
+## Rollback Procedures
+- Use Vercel's deployment history to rollback frontend
+- For backend: Deploy previous version from Git tags
+- Database: Restore from Supabase backups if needed
+
+## Security Considerations
+- Store secrets in Vercel environment variables
+- Enable Supabase RLS (Row Level Security)
+- Regular dependency updates
+- Monitor for vulnerabilities
+
+## Performance Optimization
+- Enable Vercel analytics
+- Optimize React bundle size
+- Use Supabase connection pooling
+- Implement caching where appropriate
+
+## Monitoring and Maintenance
+- Vercel provides basic analytics
+- Supabase dashboard for database monitoring
+- Set up error tracking (e.g., Sentry)
+- Regular backups via Supabase automated backups

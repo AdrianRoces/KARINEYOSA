@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { supabase, auth } from '../supabase';
+import { supabase, auth, APP_URL } from '../supabase';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -163,7 +163,7 @@ const Register = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo: APP_URL
         }
       });
 
