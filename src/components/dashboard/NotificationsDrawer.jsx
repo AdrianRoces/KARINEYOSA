@@ -244,7 +244,7 @@ export default function NotificationsDrawer() {
         }
 
         // B. Pending Transaction 3-Day Rule
-        if (txn.status === 'Active' && !txn.isPaid) {
+        if (txn.status?.toLowerCase() === 'active' && !txn.isPaid) {
           const txnDate = txn.orderDate ? new Date(txn.orderDate) : null;
           if (txnDate) {
             const days = Math.floor((now - txnDate) / (1000 * 60 * 60 * 24));
@@ -253,20 +253,24 @@ export default function NotificationsDrawer() {
             if (days >= 3) {
               const shortId = txn.transactionId.length > 8 ? txn.transactionId.substring(0, 8) + '...' : txn.transactionId;
               
-              // 1. Run the background update to cancel
-              supabase.from('orders')
-                .update({ 
-                  status: 'Cancelled', 
-                  cancellation_reason: 'System Auto-cancelled: Pending payment for 3+ days',
-                  cancelled_date: new Date().toISOString()
-                })
-                .eq('transaction_id', txn.transactionId)
-                .then(({ error }) => {
-                  if (error && txn.transactionId.startsWith('txn-')) {
-                    // Fallback if transaction_id was fake
-                    supabase.from('orders').update({ status: 'Cancelled' }).eq('id', txn.transactionId.replace('txn-', '')).then();
-                  }
-                });
+              // 1. Run the background update to cancel the transaction rows
+              const cancelPayload = {
+                status: 'Cancelled',
+                cancellation_reason: 'System Auto-cancelled: Pending payment for 3+ days',
+                cancelled_date: new Date().toISOString()
+              };
+
+              const cancelQuery = txn.transactionId.startsWith('txn-')
+                ? supabase.from('orders').update(cancelPayload).eq('id', txn.transactionId.replace('txn-', ''))
+                : supabase.from('orders').update(cancelPayload).eq('transaction_id', txn.transactionId);
+
+              cancelQuery.then(({ data, error }) => {
+                if (error) {
+                  console.error('Auto-cancel update failed:', error, txn.transactionId);
+                } else if (!data || data.length === 0) {
+                  console.warn('Auto-cancel matched no rows:', txn.transactionId);
+                }
+              });
 
               // 2. Alert the admin
               generated.push({
